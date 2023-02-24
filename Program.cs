@@ -10,7 +10,7 @@ SortedDictionary<string, int> TotalsByYearQtr = new();
 Dictionary<string, QtrTotals> QtrTotals = new();
 var RunningQtrTotals = new QtrTotals();
 
-Console.WriteLine("Cybertruck tracker data analysis.");
+Console.WriteLine("CyberTruck tracker data analysis.");
 
 string dataFileName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "../../../../App_Data/Reservation Tracker Data.csv";
 
@@ -45,7 +45,7 @@ var currentQtrKey = string.Empty;
 
 
 var sortedList = results.OrderBy(r => r.ReservationNumber);
-Console.WriteLine("\r\nDeterminig place in line by Qtr");
+Console.WriteLine("\r\nDetermining place in line by Qtr");
 Console.WriteLine("\r\nCalculations for 2019.Q4 and 2020.Q1 are not very accurate. Post 2020.Q1 the calculations are better, but are still rough");
 Console.WriteLine("From the tracker data, the first RN for 2020.01.01 is 112808705");
 Console.WriteLine("From that point we use Tesla's quarterly delivery numbers to better track the starting position in line for each quarter.");
@@ -153,7 +153,7 @@ void SortByYearQuarter(IOrderedEnumerable<TrackerInfo> sortedList)
             RunningQtrTotals.CyberTruck += qtrTotals.CyberTruck;
         }
         Console.WriteLine($"\r\nEst. place in line from start of {i.Key}: {prevTotal:N0}");
-        Console.WriteLine($"\tReserveration numbers ~{qtrTotals.MinResNbr} through ~{qtrTotals.MaxResNbr}");
+        Console.WriteLine($"\rReservation numbers ~{qtrTotals.MinResNbr} through ~{qtrTotals.MaxResNbr}");
         Console.WriteLine($"\tTx addr: {RunningQtrTotals.NonUS,7:N0}    NonUS :{RunningQtrTotals.NonUS,7:N0}");
         Console.WriteLine($"\t Single: {RunningQtrTotals.SingleMotor,7:N0}    Dual:  {RunningQtrTotals.DualMotor,7:N0}");
         Console.WriteLine($"\t    Tri: {RunningQtrTotals.TriMotor,7:N0}    Quad:  {RunningQtrTotals.QuadMotor,7:N0} ");

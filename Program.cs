@@ -10,7 +10,7 @@ SortedDictionary<string, int> TotalsByYearQtr = new();
 Dictionary<string, QtrTotals> QtrTotals = new();
 var RunningQtrTotals = new QtrTotals();
 
-Console.WriteLine("Reformatting the Cybertruck tracker data.");
+Console.WriteLine("Cybertruck tracker data analysis.");
 
 string dataFileName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "../../../../App_Data/Reservation Tracker Data.csv";
 

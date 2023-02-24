@@ -54,7 +54,7 @@ Console.WriteLine("Most likely we could use the NonUs totals to adjust your plac
 Console.WriteLine("The Tx based reservations number have a higher chance of being moved up in the line, due to Tesla's standard practices of delivering first to local locations first.");
 Console.WriteLine("However, the adjustments should not be significant.");
 Console.WriteLine("\r\nThe Delivery number for 2019 Q4 is calculated from the total nbr of CT reservations for 2019 from the Tracking data.");
-Console.WriteLine("\r\n.The totals for Tx, NonUs etc. are running totals.");
+Console.WriteLine("\r\nThe totals for Tx, NonUs etc. are running totals.");
 
 var missMatchedQtrDate = 0;
 
@@ -83,8 +83,11 @@ void SortByYearQuarter(IOrderedEnumerable<TrackerInfo> sortedList)
 
         var qtrTotals = QtrTotals[key];
 
-        qtrTotals.MinResNbr = Math.Min(qtrTotals.MinResNbr, result.ReservationNumber);
-        qtrTotals.MaxResNbr = Math.Max(qtrTotals.MaxResNbr, result.ReservationNumber);
+        if (result.ReservationNumber != 112744100)
+        {
+            qtrTotals.MinResNbr = Math.Min(qtrTotals.MinResNbr, result.ReservationNumber);
+            qtrTotals.MaxResNbr = Math.Max(qtrTotals.MaxResNbr, result.ReservationNumber);
+        }
 
         if (result.State == "TX")
         {
@@ -153,7 +156,7 @@ void SortByYearQuarter(IOrderedEnumerable<TrackerInfo> sortedList)
             RunningQtrTotals.CyberTruck += qtrTotals.CyberTruck;
         }
         Console.WriteLine($"\r\nEst. place in line from start of {i.Key}: {prevTotal:N0}");
-        Console.WriteLine($"\rReservation numbers ~{qtrTotals.MinResNbr} through ~{qtrTotals.MaxResNbr}");
+        //Console.WriteLine($"\rReservation numbers ~{qtrTotals.MinResNbr} through ~{qtrTotals.MaxResNbr}");
         Console.WriteLine($"\tTx addr: {RunningQtrTotals.NonUS,7:N0}    NonUS :{RunningQtrTotals.NonUS,7:N0}");
         Console.WriteLine($"\t Single: {RunningQtrTotals.SingleMotor,7:N0}    Dual:  {RunningQtrTotals.DualMotor,7:N0}");
         Console.WriteLine($"\t    Tri: {RunningQtrTotals.TriMotor,7:N0}    Quad:  {RunningQtrTotals.QuadMotor,7:N0} ");

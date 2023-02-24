@@ -1,4 +1,6 @@
-﻿using CsvHelper;
+﻿// tracker data @ https://docs.google.com/spreadsheets/d/1--6OR9ECwSwZdkOtWkuslJVCyAAfQv1eJal1fdngfsk/edit#gid=0
+
+using CsvHelper;
 using System.Globalization;
 using TimeZoneNames;
 
@@ -66,6 +68,18 @@ namespace TrackerData
                     this.Trim == TrimEnum.ModelS ||
                     this.Trim == TrimEnum.ModelX ||
                     this.Trim == TrimEnum.ModelY;
+            }
+        }
+        internal bool IsACyberTruck
+        {
+            get
+            {
+                return
+                    this.Trim == TrimEnum.Cybertruck ||
+                    this.Trim == TrimEnum.TriMotor ||
+                    this.Trim == TrimEnum.SingleMotor ||
+                    this.Trim == TrimEnum.DualMotor ||
+                    this.Trim == TrimEnum.Quad;
             }
         }
 
@@ -331,6 +345,7 @@ namespace TrackerData
             return null;
         }
 
+        #region Data load
         private static void AddStates()
         {
             if (StateAbbreviations.Count != 0)
@@ -858,7 +873,7 @@ namespace TrackerData
         static private void AddDeliveries()
         {
             // delivery numbers are from https://ir.tesla.com/#quarterly-disclosure
-            var key = "2019.Q4";
+            var key = "2019 Q4";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -866,7 +881,7 @@ namespace TrackerData
                     ModelSX = 0
                 }
             );
-            key = "2020.Q1";
+            key = "2020 Q1";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -874,7 +889,7 @@ namespace TrackerData
                     ModelSX = 12200
                 }
             );
-            key = "2020.Q2";
+            key = "2020 Q2";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -882,7 +897,7 @@ namespace TrackerData
                     ModelSX = 10600
                 }
             );
-            key = "2020.Q3";
+            key = "2020 Q3";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -890,7 +905,7 @@ namespace TrackerData
                     ModelSX = 15200
                 }
             );
-            key = "2020.Q4";
+            key = "2020 Q4";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -899,7 +914,7 @@ namespace TrackerData
                 }
             );
 
-            key = "2021.Q1";
+            key = "2021 Q1";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -907,7 +922,7 @@ namespace TrackerData
                     ModelSX = 2020
                 }
             );
-            key = "2021.Q2";
+            key = "2021 Q2";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -915,7 +930,7 @@ namespace TrackerData
                     ModelSX = 2340
                 }
             );
-            key = "2021.Q3";
+            key = "2021 Q3";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -923,7 +938,7 @@ namespace TrackerData
                     ModelSX = 8941
                 }
             );
-            key = "2021.Q4";
+            key = "2021 Q4";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -932,7 +947,7 @@ namespace TrackerData
                 }
             );
 
-            key = "2022.Q1";
+            key = "2022 Q1";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -940,7 +955,7 @@ namespace TrackerData
                     ModelSX = 14724
                 }
             );
-            key = "2022.Q2";
+            key = "2022 Q2";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -948,7 +963,7 @@ namespace TrackerData
                     ModelSX = 16162
                 }
             );
-            key = "2022.Q3";
+            key = "2022 Q3";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -956,7 +971,7 @@ namespace TrackerData
                     ModelSX = 18672
                 }
             );
-            key = "2022.Q4";
+            key = "2022 Q4";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
@@ -967,6 +982,7 @@ namespace TrackerData
 
 
         }
+        #endregion
     }
 
     internal enum TrimEnum
@@ -1009,84 +1025,24 @@ namespace TrackerData
             }
         }
     }
-
+    internal class QtrTotals
+    {
+        internal int MinResNbr;
+        internal int MaxResNbr;
+        internal int InTx;
+        internal int NonUS;
+        internal int SingleMotor;
+        internal int DualMotor;
+        internal int TriMotor;
+        internal int QuadMotor;
+        internal int CyberTruck;
+        internal QtrTotals()
+        {
+            this.MinResNbr = int.MaxValue;
+            this.MaxResNbr = int.MinValue;
+        }
+    }
 }
 
-/*
- * 
- 6	Alaska	AK	99501	99950
-5	Alabama	AL	35004	36925
-69	Arkansas	AR	71601	72959
-8	Arkansas (Texarkana)	AR	75502	75502
-7	Arizona	AZ	85001	86556
-9	California	CA	90001	96162
-10	Colorado	CO	80001	81658
-11	Connecticut	CT	6001	6389
-73	Connecticut	CT	6401	6928
-13	Dist of Columbia	DC	20001	20039
-74	Dist of Columbia	DC	20042	20599
-63	Dist of Columbia	DC	20799	20799
-12	Delaware	DE	19701	19980
-14	Florida	FL	32004	34997
-15	Georgia	GA	30001	31999
-65	Georga (Atlanta)	GA	39901	39901
-16	Hawaii	HI	96701	96898
-20	Iowa	IA	50001	52809
-66	Iowa (OMAHA)	IA	68119	68120
-17	Idaho	ID	83201	83876
-18	Illinois	IL	60001	62999
-19	Indiana	IN	46001	47997
-21	Kansas	KS	66002	67954
-22	Kentucky	KY	40003	42788
-68	Louisiana	LA	70001	71232
-23	Louisiana	LA	71234	71497
-26	Massachusetts	MA	1001	2791
-58	Massachusetts (Andover)	MA	5501	5544
-77	Maryland	MD	20331	20331
-78	Maryland	MD	20335	20797
-25	Maryland	MD	20812	21930
-24	Maine	ME	3901	4992
-27	Michigan	MI	48001	49971
-28	Minnesota	MN	55001	56763
-57	kc96 DataMO	MO	63001	65899
-29	Mississippi	MS	38601	39776
-59	Mississippi(Warren)	MS	71233	71233
-31	Montana	MT	59001	59937
-38	North Carolina	NC	27006	28909
-39	North Dakota	ND	58001	58856
-67	Nebraska	NE	68001	68118
-32	Nebraska	NE	68122	69367
-34	New Hampshire	NH	3031	3897
-35	New Jersey	NJ	7001	8989
-36	New Mexico	NM	87001	88441
-33	Nevada	NV	88901	89883
-60	New York (Fishers Is)	NY	6390	6390
-37	New York	NY	10001	14975
-40	Ohio	OH	43001	45999
-70	Oklahoma	OK	73001	73199
-41	Oklahoma	OK	73401	74966
-42	Oregon	OR	97001	97920
-43	Pennsylvania	PA	15001	19640
-44	Puerto Rico	PR	0	0
-45	Rhode Island	RI	2801	2940
-46	South Carolina	SC	29001	29948
-47	South Dakota	SD	57001	57799
-48	Tennessee	TN	37010	38589
-49	Texas (Austin)	TX	73301	73301
-71	Texas	TX	75001	75501
-72	Texas	TX	75503	79999
-61	Texas (El Paso)	TX	88510	88589
-50	Utah	UT	84001	84784
-64	Virginia	VA	20040	20041
-75	Virginia	VA	20040	20167
-76	Virginia	VA	20042	20042
-52	Virginia	VA	22001	24658
-51	Vermont	VT	5001	5495
-62	Vermont	VT	5601	5907
-53	Washington	WA	98001	99403
-55	Wisconsin	WI	53001	54990
-54	West Virginia	WV	24701	26886
-56	Wyoming	WY	82001	83128
 
- * */
 

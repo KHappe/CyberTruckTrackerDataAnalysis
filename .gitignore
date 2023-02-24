@@ -361,4 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
 /App_Data/Reservation Tracker Data.reformatted.csv
+*.xlsx

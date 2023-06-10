@@ -12,15 +12,19 @@ namespace TrackerData
         private static List<ZipCodeLookup> ZipCodes = new();
         private static int EmptyModels = 0;
         internal static Dictionary<string,Deliveries> DeliversPerQuarter = new();
+        internal static DateOnly FirstDate = new DateOnly(2019,11,21);
         internal static int FirstRN = 112744100;
         internal static int FirstRN_2020 = 112808705; // Estimate from tracker spreadsheet
         internal static int LastRN_2019 = FirstRN_2020 - 1;
 
 
         internal DateOnly Date;
+        internal DateOnly LastDate;
         internal TimeOnly Time;
+        internal DateOnly OriginalDate;
         internal string TimeZone = string.Empty;
         internal int ReservationNumber;
+        internal int OriginalReservationNumber;
         internal string Address = string.Empty;
         internal bool US;
         internal string State = string.Empty;
@@ -30,6 +34,15 @@ namespace TrackerData
         internal TrimEnum Trim;
         internal bool FSD;
         internal bool TeslaOwner;
+        internal bool BadData;
+
+
+        internal int Year
+        {
+            get {
+                return Date.Year;
+            }
+        }
 
         internal int Qtr
         {
@@ -52,6 +65,14 @@ namespace TrackerData
                     default:
                         return 4;
                 }
+            }
+        }
+
+        internal string Key
+        {
+            get
+            {
+                return $"{Year:d4} Q{Qtr}";
             }
         }
         internal bool IsACar
@@ -103,15 +124,21 @@ namespace TrackerData
                 while (csv.Read())
                 {
                     var info = new TrackerInfo();
-                    Results.Add(info);
                     try
                     {
-                        var successful = ParseDate(info, csv.GetField(0));
+                        var successful = ParseReservationNumber(info, csv.GetField(4));
+                        successful = ParseDate(info, csv.GetField(0));
+
+                        if (info.ReservationNumber <= FirstRN ) // || info.Date.Year < 2019)
+                        {
+                            continue;
+                        }
+
                         successful = ParseTime(info, csv.GetField(1));
                         successful = ParseTimeZone(info, csv.GetField(2));
 
                         info.Address = ParseRegion(info, csv.GetField(3));
-                        successful = ParseReservationNumber(info, csv.GetField(4));
+
                         int count = 0;
                         try
                         {
@@ -120,6 +147,7 @@ namespace TrackerData
                         catch( Exception ex)
                         {
                             info.Count = 10;
+                            info.Count = 1;
                         }
                         successful = ParseModel(info, csv.GetField(6));
 
@@ -127,8 +155,8 @@ namespace TrackerData
 
                         info.TeslaOwner = StringToBool(csv.GetField(8));
 
-                        
                         i++;
+                        Results.Add(info);
                     }
                     catch (Exception ex)
                     {
@@ -239,9 +267,30 @@ namespace TrackerData
 
         static internal bool ParseTimeZone(TrackerInfo record, string value)
         {
-            record.TimeZone = value;
+            record.TimeZone = value.ToUpper();
             // figure this out later
             //var tzNames = TZNames.GetDisplayNames("en-US");
+    
+            switch(record.TimeZone)
+            {
+                case "ET":
+                case "EDT":
+                case "EST":
+
+                case "CT":
+                case "CDT":
+                case "CST":
+
+                case "MT":
+                case "MDT":
+                case "MST":
+
+                case "PT":
+                case "PDT":
+                case "PST":
+                    record.US = true;
+                    break;
+            }
 
             return true;
         }
@@ -873,14 +922,182 @@ namespace TrackerData
         static private void AddDeliveries()
         {
             // delivery numbers are from https://ir.tesla.com/#quarterly-disclosure
-            var key = "2019 Q4";
+            var key = "";
+
+            key = "2015 Q1";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
-                    Model3Y = 39934, // total nbr of CY reservations in the Tracker
+                    Model3Y = 0,
                     ModelSX = 0
                 }
             );
+
+            key = "2015 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 11507
+                }
+            );
+
+            key = "2015 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 11580
+                }
+            );
+
+            key = "2015 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 0
+                }
+            );
+
+            key = "2016 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 12420 + 2400
+                }
+            );
+
+            key = "2016 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 9745 + 4625
+                }
+            );
+
+            key = "2016 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 15800 + 8700
+                }
+            );
+
+            key = "2016 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 12700 + 9500
+                }
+            );
+
+
+
+            key = "2017 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 13450 + 11550
+                }
+            );
+            key = "2017 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 12000+10000
+                }
+            );
+            key = "2017 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 220,
+                    ModelSX = 14065 + 11865
+                }
+            );
+            key = "2017 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 1550,
+                    ModelSX = 15200 + 13120
+                }
+            );
+
+
+            key = "2018 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 8180,
+                    ModelSX = 21800
+                }
+            );
+            key = "2018 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 18440,
+                    ModelSX = 10930 + 11370
+                }
+            );
+            key = "2018 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 55840,
+                    ModelSX = 14470 + 13190
+                }
+            );
+            key = "2018 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 63150,
+                    ModelSX = 13500+14050
+                }
+            );
+
+            key = "2019 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 50900,
+                    ModelSX = 12100
+                }
+            );
+            key = "2019 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 77550,
+                    ModelSX = 17650
+                }
+            );
+            key = "2019 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 79600, 
+                    ModelSX = 17400
+                }
+            );
+            key = "2019 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 92550,
+                    ModelSX = 19450
+                }
+            );
+
             key = "2020 Q1";
             DeliversPerQuarter.Add(key,
                 new Deliveries
@@ -910,7 +1127,7 @@ namespace TrackerData
                 new Deliveries
                 {
                     Model3Y = 161650,
-                    ModelSX = 16097
+                    ModelSX = 18920
                 }
             );
 
@@ -926,16 +1143,16 @@ namespace TrackerData
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
-                    Model3Y = 204081,
-                    ModelSX = 2340
+                    Model3Y = 199360,
+                    ModelSX = 1890
                 }
             );
             key = "2021 Q3";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
-                    Model3Y = 228882,
-                    ModelSX = 8941
+                    Model3Y = 232025,
+                    ModelSX = 9275
                 }
             );
             key = "2021 Q4";
@@ -977,6 +1194,14 @@ namespace TrackerData
                 {
                     Model3Y = 388131,
                     ModelSX = 17147
+                }
+            );
+            key = "2023 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 412180,
+                    ModelSX = 10695
                 }
             );
 
@@ -1029,6 +1254,8 @@ namespace TrackerData
     {
         internal int MinResNbr;
         internal int MaxResNbr;
+        internal int MinResIndex;
+        internal int MaxResIndex;
         internal int InTx;
         internal int NonUS;
         internal int SingleMotor;
@@ -1036,10 +1263,19 @@ namespace TrackerData
         internal int TriMotor;
         internal int QuadMotor;
         internal int CyberTruck;
+        internal DateOnly MinResNbrDate;
+        internal DateOnly MaxResNbrDate;
         internal QtrTotals()
         {
             this.MinResNbr = int.MaxValue;
             this.MaxResNbr = int.MinValue;
+        }
+        internal int TotalReservations
+        {
+            get
+            {
+                return this.MaxResNbr - this.MinResNbr;
+            }
         }
     }
 }

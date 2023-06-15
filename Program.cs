@@ -14,42 +14,20 @@ SortedDictionary<string, int> TotalsByYearQtr = new();
 Dictionary<string, QtrTotals> QtrTotals = new();
 SortedDictionary<string, QtrTotals> monthlyTotals = new();
 
-//FixedSizedQueue<int> averageDates = new(10);
-
 List<TrackerInfo> BadRecords = new();
+
+var startingPlaceInLineByQtr = TrackerInfo.FirstRN;
+var currentQtrKey = string.Empty;
+var first2020Q1RNumber = 0;
+
+
 
 Console.WriteLine("CyberTruck tracker data analysis.");
 
 string fileName = "Reservation Tracker - Cybertruck";
 
 string dataFileName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "../../../../App_Data/" + fileName + ".csv";
-
 var results = TrackerInfo.Parse(dataFileName);
-
-var count = 0;
-var nonUsCount = 0;
-var txCount = 0;
-var needLocCount = 0;
-var lastDif = 0;
-var lastResNbr = 112744100;
-var baseResNbr = 112744100;
-var maxResNbr = 0;
-
-var singleMotorCnt = 0;
-var dualMotorCnt = 0;
-var triMotorCnt = 0;
-var quadMotorCnt = 0;
-var ctCount = 0;
-
-
-var RnQtrStart = TrackerInfo.FirstRN;
-var RnQtrEnd = TrackerInfo.LastRN_2019;
-
-
-
-var startingPlaceInLineByQtr = RnQtrStart;
-var currentQtrKey = string.Empty;
-var first2020Q1RNumber = 0;
 
 
 var sortedList = results.OrderBy(r => r.ReservationNumber);
@@ -127,7 +105,7 @@ void adjustDates(List<TrackerInfo> theList, KeyValuePair<string, QtrTotals> kvp,
         return;
     }
     var firstIndex = nextKvp.Value.MinResIndex - 1;
-    var lastIndex = kvp.Value.MaxResIndex + 1;
+    var lastIndex = kvp.Value.MaxResIndex;
 
     var firstQtrKey = theList[firstIndex].Key;
     var lastQtrKey = theList[lastIndex].Key;
@@ -286,7 +264,7 @@ void UpdateMonthlyTotals(TrackerInfo info)
     var month = monthlyTotals[key];
     month.MaxResNbr = 0;
 
-    if (info.ReservationNumber != baseResNbr && info.ReservationNumber < month.MinResNbr)
+    if (info.ReservationNumber != TrackerInfo.FirstRN && info.ReservationNumber < month.MinResNbr)
     {
         month.MinResNbr = info.ReservationNumber;
         month.MinResNbrDate = info.Date;
@@ -500,23 +478,42 @@ void ShowQtrResults()
     foreach (var kvp in QtrTotals)
     {
         int deliveries = 0;
+        int cancelledDeliveries = 0;
         //if ( kvp.Key != "2019 Q4" && TrackerInfo.DeliversPerQuarter.ContainsKey(kvp.Key))
         if (TrackerInfo.DeliversPerQuarter.ContainsKey(kvp.Key))
         {
             deliveries = TrackerInfo.DeliversPerQuarter[kvp.Key].TotalDeliveries;
+            cancelledDeliveries = (int)Math.Round(deliveries * 0.05);
         }
         totalsForTx += kvp.Value.InTx;
         totalsForNonUs += kvp.Value.NonUS;
 
-        Console.WriteLine(
+        var message =
            $"\r\nQuarter: {kvp.Key}\r\n" +
-           $"\tTracker reservation numbers: ~{kvp.Value.MinResNbr:d6} thru ~{kvp.Value.MaxResNbr} = ~{kvp.Value.TotalReservations:N0} possible reservations, \r\n" +
-           $"\tNonUS: {totalsForNonUs:N0}, Tx: {totalsForTx:N0} \r\n" +
-           $"\tDeliveries per Tesla for quarter: {deliveries:N0} \r\n" +
-           $"\tEst. place in line from start of Qtr: {totalDeliveries:N0}");
+           $"\tTracker reservation numbers: ~{kvp.Value.MinResNbr:d6} thru ~{kvp.Value.MaxResNbr} = \r\n" +
+           $"\t~ {kvp.Value.TotalReservations,9:N0} Possible reservations.\r\n" +
+           $"\t  {totalsForTx,9:N0} Texas reservations. (info only - running total)\r\n" + 
+           $"\t- {kvp.Value.NonUS,9:N0} Non US reservations.\r\n";
+
+
+        if (kvp.Key == "2019 Q4")
+        {
+            message += $"\t= {totalDeliveries,9:N0} Estimated place in line from start of Quarter.";
+        }
+        else
+        {
+            message +=
+                $"\t- {deliveries,9:N0} Deliveries for quarter. Data provided by Tesla.\r\n" +
+                $"\t- {cancelledDeliveries,9:N0} Estimated 5% cancelled orders.\r\n" +
+                $"\t= {totalDeliveries,9:N0} Estimated place in line from start of Quarter.";
+
+        }
+        Console.WriteLine(message);
 
         totalDeliveries += kvp.Value.TotalReservations;
+        totalDeliveries -= kvp.Value.NonUS;
         totalDeliveries -= deliveries;
+        totalDeliveries -= cancelledDeliveries;
     }
 }
 
@@ -526,13 +523,14 @@ void ShowAssumptions()
     TrackerInfo.FirstRN_2020 = first2020Q1RNumber;
 
     Console.WriteLine("\r\nDetermining place in line by Qtr");
-    Console.WriteLine("\r\nCalculations for 2019.Q4 and 2020.Q1 are not very accurate. Post 2020.Q1 the calculations are better, but are still rough");
+    Console.WriteLine("\r\nCalculations for 2019.Q4 and 2020.Q1 are not very accurate. Post 2020.Q1 the calculations are better, but are still rough.");
     //Console.WriteLine("From the tracker data, the first RN for 2020.01.01 is " + first2020Q1RNumber);
     Console.WriteLine("From that point we use Tesla's quarterly delivery numbers to better adjust the starting position for each quarter.");
-    Console.WriteLine("\r\nThe NonUs and Tx totals may adjust position in line. That is why they are broken out of the existing tracker data.");
-    Console.WriteLine("Most likely we could use the NonUs totals to adjust your place in line.");
+    Console.WriteLine("Assumption that some orders are cancelled, adding a 5% estimate on the number of deliveries cancelled per quarter.");
+    Console.WriteLine("\r\nIncluding a break out of the Non Us and Tx totals. These values may adjust position in line. ");
+    //Console.WriteLine("Most likely we could use the NonUs totals to adjust your place in line.");
     Console.WriteLine("The Tx based reservations number have a higher chance of being moved up in the line, due to Tesla's standard practices of delivering first to local locations first.");
     Console.WriteLine("However, the adjustments should not be significant.");
     //Console.WriteLine("\r\nThe Delivery number for 2019 Q4 is calculated from the total nbr of CT reservations for 2019 from the Tracking data.");
-    Console.WriteLine("\r\nThe totals for Tx, NonUs etc. are running totals.");
+    Console.WriteLine("\r\nThe total for Tx is a running total.");
 }

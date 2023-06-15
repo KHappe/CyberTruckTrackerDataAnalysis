@@ -14,6 +14,7 @@ namespace TrackerData
         internal static Dictionary<string,Deliveries> DeliversPerQuarter = new();
         internal static DateOnly FirstDate = new DateOnly(2019,11,21);
         internal static int FirstRN = 112744100;
+        internal static int MaxRN   = 200000000;
         internal static int FirstRN_2020 = 112808705; // Estimate from tracker spreadsheet
         internal static int LastRN_2019 = FirstRN_2020 - 1;
 
@@ -129,7 +130,7 @@ namespace TrackerData
                         var successful = ParseReservationNumber(info, csv.GetField(4));
                         successful = ParseDate(info, csv.GetField(0));
 
-                        if (info.ReservationNumber <= FirstRN ) // || info.Date.Year < 2019)
+                        if (info.ReservationNumber <= FirstRN  || info.ReservationNumber >= MaxRN) // || info.Date.Year < 2019)
                         {
                             continue;
                         }

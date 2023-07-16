@@ -475,40 +475,72 @@ void ShowQtrResults()
     var totalDeliveries = 0;
     var totalsForTx = 0;
     var totalsForNonUs = 0;
+    var previousCTOrders = 0;
+    var qtrTotal = 0;
+    int prevQtrDeliveries = 0;
     foreach (var kvp in QtrTotals)
     {
         int deliveries = 0;
         int cancelledDeliveries = 0;
+        var model3YDeliveries = 0;
+        var modelSXDeliveries = 0;
+
         //if ( kvp.Key != "2019 Q4" && TrackerInfo.DeliversPerQuarter.ContainsKey(kvp.Key))
         if (TrackerInfo.DeliversPerQuarter.ContainsKey(kvp.Key))
         {
+            model3YDeliveries = TrackerInfo.DeliversPerQuarter[kvp.Key].Model3Y;
+            modelSXDeliveries = TrackerInfo.DeliversPerQuarter[kvp.Key].ModelSX;
             deliveries = TrackerInfo.DeliversPerQuarter[kvp.Key].TotalDeliveries;
             cancelledDeliveries = (int)Math.Round(deliveries * 0.05);
         }
         totalsForTx += kvp.Value.InTx;
         totalsForNonUs += kvp.Value.NonUS;
 
+        qtrTotal = kvp.Value.TotalReservations - cancelledDeliveries - totalsForNonUs;
+
         var message =
            $"\r\nQuarter: {kvp.Key}\r\n" +
+           $"{deliveries,10:N0} Deliveries for quarter. ( 3/Y: {model3YDeliveries:N0} S/X: {modelSXDeliveries:N0}) Data provided by Tesla.\r\n" +
            $"\tTracker reservation numbers: ~{kvp.Value.MinResNbr:d6} thru ~{kvp.Value.MaxResNbr} = \r\n" +
-           $"\t~ {kvp.Value.TotalReservations,9:N0} Possible reservations.\r\n" +
-           $"\t  {totalsForTx,9:N0} Texas reservations. (info only - running total)\r\n" + 
-           $"\t- {kvp.Value.NonUS,9:N0} Non US reservations.\r\n";
+           $"\t~ {kvp.Value.TotalReservations,10:N0} Possible reservations.\r\n" +
+           $"\t  {totalsForTx,10:N0} Texas reservations. (info only - running total)\r\n" + 
+           $"\t- {kvp.Value.NonUS,10:N0} Non US reservations.\r\n" +
+           $"\t- {cancelledDeliveries,10:N0} Estimated 5% cancelled orders.\r\n" +
+           $"\t= {qtrTotal,10:N0} Cyber truck orders for quarter.\r\n";
 
+        var placeInLine = 0;
+        if (kvp.Key != "2019 Q4")
+        {
+            placeInLine = qtrTotal + previousCTOrders - prevQtrDeliveries;
+        }
 
         if (kvp.Key == "2019 Q4")
         {
-            message += $"\t= {totalDeliveries,9:N0} Estimated place in line from start of Quarter.";
+            message += $"\t= {0,10:N0} Estimated place in line from start of Quarter.\r\n";
         }
         else
         {
-            message +=
-                $"\t- {deliveries,9:N0} Deliveries for quarter. Data provided by Tesla.\r\n" +
-                $"\t- {cancelledDeliveries,9:N0} Estimated 5% cancelled orders.\r\n" +
-                $"\t= {totalDeliveries,9:N0} Estimated place in line from start of Quarter.";
-
+            message += $"\r\n\t+ {previousCTOrders,10:N0} Previous CT orders.\r\n" +
+                       $"\t- {prevQtrDeliveries,10:N0} Previous Qtr deliveries.\r\n" + 
+                       $"\t= {placeInLine,10:N0} Estimated place in line from start of Quarter.\r\n";
         }
+        
+
+        //if (kvp.Key == "2019 Q4")
+        //{
+        //    message += $"\t= {totalDeliveries,10:N0} Estimated place in line from start of Quarter.";
+        //}
+        //else
+        
+
+
+        //$"{totalDeliveries,10:N0} Previous CT orders.\r\n";
+
         Console.WriteLine(message);
+
+        prevQtrDeliveries = deliveries;
+
+        previousCTOrders += qtrTotal;
 
         totalDeliveries += kvp.Value.TotalReservations;
         totalDeliveries -= kvp.Value.NonUS;

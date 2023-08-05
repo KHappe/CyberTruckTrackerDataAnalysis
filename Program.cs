@@ -16,32 +16,35 @@ string dataFileName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Loca
 
 var results = TrackerInfo.Parse(dataFileName);
 
-var count = 0;
-var nonUsCount = 0;
-var txCount = 0;
-var needLocCount = 0;
-var lastDif = 0;
-var lastResNbr = 112744100;
-var maxResNbr = 0;
+//var count = 0;
+//var nonUsCount = 0;
+//var txCount = 0;
+//var needLocCount = 0;
+//var lastDif = 0;
+//var lastResNbr = 112744100;
+//var maxResNbr = 0;
 
-var singleMotorCnt = 0;
-var dualMotorCnt = 0;
-var triMotorCnt = 0;
-var quadMotorCnt = 0;
-var ctCount = 0;
+//var singleMotorCnt = 0;
+//var dualMotorCnt = 0;
+//var triMotorCnt = 0;
+//var quadMotorCnt = 0;
+//var ctCount = 0;
 
-var qtrYear = 2019;
-var qtr = 4;
-var qtrDeliveries = 0;
+//var qtrYear = 2019;
+//var qtr = 4;
+//var qtrDeliveries = 0;
+
 var RnQtrStart = TrackerInfo.FirstRN;
 var RnQtrEnd = TrackerInfo.LastRN_2019;
 
-var PrevQtrPlaceInLine = 0;
-var RnPrevQtrEnd = 0;
+//var PrevQtrPlaceInLine = 0;
+//var RnPrevQtrEnd = 0;
 
 var startingPlaceInLineByQtr = RnQtrStart;
-var prevQtrDeliveries = 0;
+//var prevQtrDeliveries = 0;
 var currentQtrKey = string.Empty;
+
+results = TrackerInfo.Normalize(results);
 
 
 var sortedList = results.OrderBy(r => r.ReservationNumber);
@@ -62,13 +65,14 @@ SortByYearQuarter(sortedList);
 
 void SortByYearQuarter(IOrderedEnumerable<TrackerInfo> sortedList)
 {
+    int currentRecordIndex = 0;
     foreach (var result in sortedList)
     {
-        if (!result.IsACyberTruck || result.ReservationNumber < 112744100 || (result.Date.Year <= 2019 && result.Qtr < 4))
+        if (!result.IsACyberTruck || result.ReservationNumber <= 112744100 || (result.Date.Year <= 2019 && result.Qtr < 4))
         {
             continue;
         }
-
+        currentRecordIndex++;
         var key = $"{result.Date.Year:d4} Q{result.Qtr}";
         if (!ReservationsByYearQtr.ContainsKey(key))
         {
@@ -138,6 +142,12 @@ void SortByYearQuarter(IOrderedEnumerable<TrackerInfo> sortedList)
             total += kvp.Value.Count;
         }
 
+        //Console.WriteLine(kvp.Key);
+        //for( var i = 0; i < kvp.Value.Count; i++ )
+        //{
+        //    System.Diagnostics.Debug.WriteLine( $" RN:{ kvp.Value[i].ReservationNumber} " );
+        //}
+
         TotalsByYearQtr.Add(kvp.Key, total);
     }
 
@@ -156,6 +166,8 @@ void SortByYearQuarter(IOrderedEnumerable<TrackerInfo> sortedList)
             RunningQtrTotals.CyberTruck += qtrTotals.CyberTruck;
         }
         Console.WriteLine($"\r\nEst. place in line from start of {i.Key}: {prevTotal:N0}");
+        Console.WriteLine($"\r\n RN Min:{ qtrTotals.MinResNbr} - {TrackerInfo.FirstRN} = {(qtrTotals.MinResNbr - TrackerInfo.FirstRN),7:N0}");
+        Console.WriteLine($"\r\n RN Max:{qtrTotals.MaxResNbr} - {TrackerInfo.FirstRN} = {(qtrTotals.MaxResNbr - TrackerInfo.FirstRN),7:N0}");
         //Console.WriteLine($"\rReservation numbers ~{qtrTotals.MinResNbr} through ~{qtrTotals.MaxResNbr}");
         Console.WriteLine($"\tTx addr: {RunningQtrTotals.NonUS,7:N0}    NonUS :{RunningQtrTotals.NonUS,7:N0}");
         Console.WriteLine($"\t Single: {RunningQtrTotals.SingleMotor,7:N0}    Dual:  {RunningQtrTotals.DualMotor,7:N0}");

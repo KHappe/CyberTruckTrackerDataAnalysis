@@ -1,20 +1,25 @@
 ﻿// tracker data @ https://docs.google.com/spreadsheets/d/1--6OR9ECwSwZdkOtWkuslJVCyAAfQv1eJal1fdngfsk/edit#gid=0
 
 using CsvHelper;
+using Microsoft.VisualBasic;
+using System.Collections.Generic;
+using System.Diagnostics.SymbolStore;
 using System.Globalization;
+using System.Reflection;
 using TimeZoneNames;
 
 namespace TrackerData
 {
-    internal class TrackerInfo
+    internal class TrackerInfo : IEquatable<TrackerInfo>, IComparable<TrackerInfo>
     {
         private static Dictionary<string, string> StateAbbreviations = new();
         private static List<ZipCodeLookup> ZipCodes = new();
         private static int EmptyModels = 0;
-        internal static Dictionary<string,Deliveries> DeliversPerQuarter = new();
+        internal static Dictionary<string, Deliveries> DeliversPerQuarter = new();
         internal static int FirstRN = 112744100;
         internal static int FirstRN_2020 = 112808705; // Estimate from tracker spreadsheet
         internal static int LastRN_2019 = FirstRN_2020 - 1;
+        internal static DateOnly FirstOrderDate = new DateOnly(2019, 11, 21);
 
 
         internal DateOnly Date;
@@ -30,12 +35,15 @@ namespace TrackerData
         internal TrimEnum Trim;
         internal bool FSD;
         internal bool TeslaOwner;
+        internal int Index;
+        internal bool abnormalRecord = false;
+        internal ValidRecord validRecord = ValidRecord.Yes;
 
         internal int Qtr
         {
             get
             {
-                switch( Date.Month)
+                switch (Date.Month)
                 {
                     case 1:
                     case 2:
@@ -106,6 +114,7 @@ namespace TrackerData
                     Results.Add(info);
                     try
                     {
+                        info.Index = i;
                         var successful = ParseDate(info, csv.GetField(0));
                         successful = ParseTime(info, csv.GetField(1));
                         successful = ParseTimeZone(info, csv.GetField(2));
@@ -117,7 +126,7 @@ namespace TrackerData
                         {
                             info.Count = csv.GetField<int>(5);
                         }
-                        catch( Exception ex)
+                        catch (Exception ex)
                         {
                             info.Count = 10;
                         }
@@ -127,7 +136,7 @@ namespace TrackerData
 
                         info.TeslaOwner = StringToBool(csv.GetField(8));
 
-                        
+
                         i++;
                     }
                     catch (Exception ex)
@@ -138,6 +147,294 @@ namespace TrackerData
             }
             return Results;
         }
+
+        internal static List<TrackerInfo> Normalize(List<TrackerInfo> results)
+        {
+            var nonCT = results.FindAll((d) =>
+            {
+                return (!d.IsACyberTruck);
+            });
+
+            foreach (TrackerInfo info in nonCT)
+            {
+                results.Remove(info);
+            }
+
+            var badEntries = results.FindAll((d) =>
+            {
+                var notSetDate = d.Date.Year == 1 && d.Date.Month == 1 && d.Date.Day == 1;
+                var toEarlyDate = d.Date < FirstOrderDate;
+                var badRn = d.ReservationNumber <= FirstRN;
+
+                return ( toEarlyDate || notSetDate ) && badRn;
+            });
+
+            foreach(TrackerInfo info in badEntries)
+            {
+                results.Remove(info);
+            }
+
+            var badRNs = results.FindAll((d) =>
+            {
+                return d.ReservationNumber < FirstRN;
+            });
+
+            foreach( var info in badRNs)
+            {
+                info.validRecord |= ValidRecord.BadRN;
+            }
+
+            var badDates = results.FindAll((d) =>
+            {
+                var notSetDate = d.Date.Year == 1 && d.Date.Month == 1 && d.Date.Day == 1;
+                var toEarlyDate = d.Date < FirstOrderDate;
+                return notSetDate || toEarlyDate;
+            });
+
+            foreach(TrackerInfo info in badDates) {
+                info.validRecord |= ValidRecord.BadDate;
+            }
+
+            //var notSetDates = results.FindAll((d) =>
+            //{
+            //    return (d.Date.Year == 1 && d.Date.Month == 1 && d.Date.Day == 1);
+            //});
+
+
+            results.Sort();
+
+            //for ( var i = 1830; i < 1880; i++)
+            //{
+            //    var prevIndex = i - 1;
+            //    var nextIndex = i + 1;
+            //    System.Diagnostics.Debugger.Break();
+            //}
+
+            foreach (TrackerInfo info in badDates)
+            {
+                var index = results.FindIndex((t) => t == info);
+                var date = DetermineDateFor(results, index);
+                info.Date = date;
+            }
+
+            for ( var i = 1; i < results.Count; i++)
+            {
+                int prevIndex = i - 1;
+                int nextIndex = i + 1;
+                if (results[i].Date > results[prevIndex].Date && results[i].Date > results[nextIndex].Date)
+                {
+                    results[i].Date = results[prevIndex].Date;
+
+                    if (!(results[i].ReservationNumber >= results[prevIndex].ReservationNumber && results[i].ReservationNumber <= results[nextIndex].ReservationNumber))
+                    {
+                        System.Diagnostics.Debugger.Break();
+                    }
+                }
+            }
+
+            for ( var i = 1; i < results.Count; i++)
+            {
+                if (results[i].ReservationNumber >= FirstRN)
+                {
+                    continue;
+                }
+                var prevIndex = i;
+                var nextIndex = i;
+                while (--prevIndex >= 0 && results[prevIndex].ReservationNumber < FirstRN) { }
+
+                while (++nextIndex < results.Count && results[nextIndex].ReservationNumber <= FirstRN) { }
+
+                int dif = results[nextIndex].ReservationNumber - results[prevIndex].ReservationNumber;
+                if ( dif > 1)
+                {
+                    results[i].ReservationNumber = results[prevIndex].ReservationNumber + 1;
+                }
+                else
+                {
+                    results[i].ReservationNumber = results[nextIndex].ReservationNumber + 1;
+                }
+                results[i].validRecord = ValidRecord.Yes;
+
+            }
+
+            //foreach (TrackerInfo info in badRNs)
+            //{
+            //    var index = results.FindIndex((t) => t == info);
+            //    var rn = DetermineRNFor(results, index);
+            //    info.ReservationNumber = rn;
+            //}
+
+
+            //List<TrackerInfo> byDate = results.OrderBy(x => x.Date).ToList<TrackerInfo>();
+
+            //for( var i = 0; i < 100;i++)
+            //{
+            //    var record = results[i];
+            //    System.Diagnostics.Debug.WriteLine($"Index:{record.Index}, RN:{record.ReservationNumber}, Date:{record.Date}, Time:{record.Time} ");
+            //}
+
+
+            //int badRecordCount = 0;
+            //foreach (var result in results)
+            //{
+            //    if (!result.IsACyberTruck || result.ReservationNumber <= 112744100 || result.Date < FirstOrderDate)
+            //    {
+            //        result.abnormalRecord = true;
+            //        badRecordCount++;
+            //        continue;
+            //    }
+
+
+
+            //}
+
+            results.Sort();
+            var found = false;
+            //for (var i = 1; i < results.Count - 1; i++)
+            //{
+            //    var nextIndex = i + 1;
+            //    if (results[i].ReservationNumber > results[nextIndex].ReservationNumber )
+            //    {
+            //        System.Diagnostics.Debugger.Break();
+            //    }
+            //    if ( results[i].ReservationNumber > FirstRN && !found)
+            //    {
+            //        System.Diagnostics.Debugger.Break();
+            //        found = true;
+            //    }
+            //}
+
+            for (var i = 1; i < results.Count; i++)
+            {
+                var prevIndex = i - 1;
+                int dif = results[i].ReservationNumber - results[prevIndex].ReservationNumber;
+                if (results[prevIndex].ReservationNumber != 0 && dif > 100000)
+                {
+                    if ( (i + 1) >= results.Count)
+                    {
+                        results[i].ReservationNumber = results[prevIndex].ReservationNumber + 1;
+                    }
+                }
+            }
+
+
+
+            return results;
+        }
+
+        private static DateOnly DetermineDateFor(List<TrackerInfo> results, int index)
+        {
+            int offset = index;
+
+            while (--offset > 0)
+            {
+                if (results[offset].Date >= FirstOrderDate)
+                {
+                    return results[offset].Date;
+                }
+            }
+            offset = index;
+            while (++offset < results.Count)
+            {
+                if (results[offset].Date >= FirstOrderDate)
+                {
+                    return results[offset].Date;
+                }
+            }
+            return new DateOnly(9999, 1, 1);
+
+        }
+
+        private static int DetermineRNFor(List<TrackerInfo> results, int index)
+        {
+            if ( index == results.Count - 1)
+            {
+                return results[index - 1].ReservationNumber + 1;
+            }
+
+            int prevIndex = index;
+            while (--prevIndex > 0 && (results[prevIndex].validRecord & ValidRecord.BadRN) == ValidRecord.BadRN) { }
+            int nextIndex = index;
+
+            while (++nextIndex < results.Count && (results[nextIndex].validRecord & ValidRecord.BadRN) == ValidRecord.BadRN) { }
+
+            int diff = results[nextIndex].ReservationNumber - results[prevIndex].ReservationNumber;
+            if ( diff > 1)
+            {
+                return results[prevIndex].ReservationNumber + 1;
+            }
+
+            while ( ++nextIndex < results.Count)
+            {
+                diff = results[nextIndex].ReservationNumber - results[prevIndex].ReservationNumber;
+                if (diff > 1)
+                {
+                    return results[nextIndex].ReservationNumber - 1;
+                }
+            }
+
+            return results[index].ReservationNumber;
+        }
+
+        public int CompareTo(TrackerInfo compareInfo)
+        {
+            int result = 0;
+            // A null value means that this object is greater.
+            if (compareInfo == null)
+            {
+                return 1;
+            }
+
+            if ( (this.validRecord & ValidRecord.BadDate) == ValidRecord.BadDate || (compareInfo.validRecord & ValidRecord.BadDate) == ValidRecord.BadDate)
+            {
+                return this.ReservationNumber - compareInfo.ReservationNumber;
+            }
+
+            if ((this.validRecord & ValidRecord.BadRN) == ValidRecord.BadRN ||(compareInfo.validRecord & ValidRecord.BadRN) == ValidRecord.BadRN)
+            {
+                result = this.Date.CompareTo(compareInfo.Date);
+                if (result == 0)
+                {
+                    result = this.Time.CompareTo(compareInfo.Time);
+                    if (result == 0)
+                    {
+                        if ( this.ReservationNumber <= FirstRN)
+                        {
+                            return 1;
+                        }
+                        if (compareInfo.ReservationNumber <= FirstRN)
+                        {
+                            return -1;
+                        }
+                        return compareInfo.ReservationNumber - this.ReservationNumber;
+                    }
+                }
+                return result;
+            }
+
+            result = this.ReservationNumber - compareInfo.ReservationNumber;
+            if ( result == 0)
+            {
+                result = this.Date.CompareTo(compareInfo.Date);
+                if ( result == 0)
+                {
+                    result = this.Time.CompareTo(compareInfo.Time);
+                }
+            }
+            return result;
+
+        }
+
+        public bool Equals(TrackerInfo compareInfo)
+        {
+            if (compareInfo == null)
+            {
+                return false;
+            }
+            return (this.Index == compareInfo.Index);
+        }
+
+
         static internal bool ParseReservationNumber(TrackerInfo record, string value)
         {
             return int.TryParse(value, out record.ReservationNumber);
@@ -216,7 +513,7 @@ namespace TrackerData
             return false;
         }
 
-        static internal bool StringToBool( string value)
+        static internal bool StringToBool(string value)
         {
             if (string.IsNullOrEmpty(value))
                 return false;
@@ -234,7 +531,13 @@ namespace TrackerData
         }
         static internal bool ParseTime(TrackerInfo record, string value)
         {
-            return TimeOnly.TryParse(value, out record.Time);
+            bool result;
+            result = TimeOnly.TryParse(value, out record.Time);
+            if (!result)
+            {
+                record.Time = new TimeOnly(23, 59, 59);
+            }
+            return result;
         }
 
         static internal bool ParseTimeZone(TrackerInfo record, string value)
@@ -259,7 +562,7 @@ namespace TrackerData
 
             record.US = true;
 
-            string address = value.Replace(",","");
+            string address = value.Replace(",", "");
             address = address.Replace(record.State, "");
             address = address.Replace(record.ZipCode.ToString(), "").Trim();
 
@@ -269,17 +572,17 @@ namespace TrackerData
             }
             var stateName = StateAbbreviations[record.State];
             int pos = address.IndexOf(stateName, StringComparison.OrdinalIgnoreCase);
-            if ( pos >= 0)
+            if (pos >= 0)
             {
                 var name = address.Substring(pos, stateName.Length);
                 address = address.Replace(name, "");  // may be lower case etc what ever.
             }
-            if ( address.Length > 0 )
+            if (address.Length > 0)
             {
                 address += ", ";
             }
             address += record.State;
-            if ( record.ZipCode != 0)
+            if (record.ZipCode != 0)
             {
                 address += " " + record.ZipCode;
             }
@@ -299,7 +602,7 @@ namespace TrackerData
             foreach (var f in fields)
             {
                 var field = f.ToUpper();
-                if ( field.Length == 0)
+                if (field.Length == 0)
                 {
                     continue;
                 }
@@ -316,10 +619,10 @@ namespace TrackerData
                 if (field.Length >= 4 && field.Length <= 5)
                 {
                     int zip;
-                    if ( int.TryParse(field, out zip))
+                    if (int.TryParse(field, out zip))
                     {
                         var zipCode = FindZip(zip);
-                        if( zipCode != null )
+                        if (zipCode != null)
                         {
                             record.State = zipCode.State;
                             record.ZipCode = zip;
@@ -331,12 +634,12 @@ namespace TrackerData
             return successful;
         }
 
-        private static ZipCodeLookup FindZip( int value)
+        private static ZipCodeLookup FindZip(int value)
         {
             AddZipCodes();
-            foreach( var item in ZipCodes)
+            foreach (var item in ZipCodes)
             {
-                if ( value >= item.ZipMin && value <= item.ZipMax )
+                if (value >= item.ZipMin && value <= item.ZipMax)
                 {
                     return item;
                 }
@@ -509,7 +812,7 @@ namespace TrackerData
             ZipCodes.Add(new ZipCodeLookup
             {
                 State = "GA",
-                SubArea= "1",
+                SubArea = "1",
                 ZipMin = 39901,
                 ZipMax = 39901
             });
@@ -779,7 +1082,7 @@ namespace TrackerData
             ZipCodes.Add(new ZipCodeLookup
             {
                 State = "TX",
-                SubArea = "Austin", 
+                SubArea = "Austin",
                 ZipMin = 73301,
                 ZipMax = 73301
             });
@@ -982,7 +1285,17 @@ namespace TrackerData
 
 
         }
+
+
         #endregion
+    }
+
+    [Flags]
+    internal enum ValidRecord 
+    {
+        Yes = 0,
+        BadDate = 1,
+        BadRN = 2
     }
 
     internal enum TrimEnum

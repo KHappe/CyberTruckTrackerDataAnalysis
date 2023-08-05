@@ -29,12 +29,14 @@ string fileName = "Reservation Tracker - Cybertruck";
 string dataFileName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "../../../../App_Data/" + fileName + ".csv";
 var results = TrackerInfo.Parse(dataFileName);
 
+results = TrackerInfo.Normalize(results);
+
 
 var sortedList = results.OrderBy(r => r.ReservationNumber);
 
 WriteMassagedFile(sortedList, "byRN.raw");
 
-fixRecords(sortedList);
+//fixRecords(sortedList);
 
 ShowAssumptions();
 

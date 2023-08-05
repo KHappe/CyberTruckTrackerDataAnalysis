@@ -17,6 +17,7 @@ namespace TrackerData
         internal static int MaxRN   = 200000000;
         internal static int FirstRN_2020 = 112808705; // Estimate from tracker spreadsheet
         internal static int LastRN_2019 = FirstRN_2020 - 1;
+        internal static DateOnly FirstOrderDate = new DateOnly(2019,11,21);
 
 
         internal DateOnly Date;
@@ -36,6 +37,10 @@ namespace TrackerData
         internal bool FSD;
         internal bool TeslaOwner;
         internal bool BadData;
+        internal int Index;
+        internal bool abnormalRecord = false;
+        internal ValidRecord validRecord = ValidRecord.Yes;
+
 
 
         internal int Year
@@ -125,30 +130,24 @@ namespace TrackerData
                 while (csv.Read())
                 {
                     var info = new TrackerInfo();
+                    Results.Add(info);
                     try
                     {
-                        var successful = ParseReservationNumber(info, csv.GetField(4));
-                        successful = ParseDate(info, csv.GetField(0));
-
-                        if (info.ReservationNumber <= FirstRN  || info.ReservationNumber >= MaxRN) // || info.Date.Year < 2019)
-                        {
-                            continue;
-                        }
-
+                        info.Index = i;
+                        var successful = ParseDate(info, csv.GetField(0));
                         successful = ParseTime(info, csv.GetField(1));
                         successful = ParseTimeZone(info, csv.GetField(2));
 
                         info.Address = ParseRegion(info, csv.GetField(3));
-
+                        successful = ParseReservationNumber(info, csv.GetField(4));
                         int count = 0;
                         try
                         {
                             info.Count = csv.GetField<int>(5);
                         }
-                        catch( Exception ex)
+                        catch (Exception ex)
                         {
                             info.Count = 10;
-                            info.Count = 1;
                         }
                         successful = ParseModel(info, csv.GetField(6));
 
@@ -156,8 +155,8 @@ namespace TrackerData
 
                         info.TeslaOwner = StringToBool(csv.GetField(8));
 
+
                         i++;
-                        Results.Add(info);
                     }
                     catch (Exception ex)
                     {
@@ -167,6 +166,207 @@ namespace TrackerData
             }
             return Results;
         }
+
+        internal static List<TrackerInfo> Normalize(List<TrackerInfo> results)
+        {
+            var nonCT = results.FindAll((d) =>
+            {
+                return (!d.IsACyberTruck);
+            });
+
+            foreach (TrackerInfo info in nonCT)
+            {
+                results.Remove(info);
+            }
+
+            var badEntries = results.FindAll((d) =>
+            {
+                var notSetDate = d.Date.Year == 1 && d.Date.Month == 1 && d.Date.Day == 1;
+                var toEarlyDate = d.Date < FirstOrderDate;
+                var badRn = d.ReservationNumber <= FirstRN;
+
+                return (toEarlyDate || notSetDate) && badRn;
+            });
+
+            foreach (TrackerInfo info in badEntries)
+            {
+                results.Remove(info);
+            }
+
+            var badRNs = results.FindAll((d) =>
+            {
+                return d.ReservationNumber < FirstRN;
+            });
+
+            foreach (var info in badRNs)
+            {
+                info.validRecord |= ValidRecord.BadRN;
+            }
+
+            var badDates = results.FindAll((d) =>
+            {
+                var notSetDate = d.Date.Year == 1 && d.Date.Month == 1 && d.Date.Day == 1;
+                var toEarlyDate = d.Date < FirstOrderDate;
+                return notSetDate || toEarlyDate;
+            });
+
+            foreach (TrackerInfo info in badDates)
+            {
+                info.validRecord |= ValidRecord.BadDate;
+            }
+
+            results.Sort();
+
+            foreach (TrackerInfo info in badDates)
+            {
+                var index = results.FindIndex((t) => t == info);
+                var date = DetermineDateFor(results, index);
+                info.Date = date;
+            }
+
+#if DEBUG
+            // making sure Reservation numbers are in order.
+            for (var i = 1; i < results.Count; i++)
+            {
+                int prevIndex = i - 1;
+                int nextIndex = i + 1;
+                if (results[i].Date > results[prevIndex].Date && results[i].Date > results[nextIndex].Date)
+                {
+                    results[i].Date = results[prevIndex].Date;
+
+                    if (!(results[i].ReservationNumber >= results[prevIndex].ReservationNumber && results[i].ReservationNumber <= results[nextIndex].ReservationNumber))
+                    {
+                        System.Diagnostics.Debugger.Break();
+                    }
+                }
+            }
+#endif
+            for (var i = 1; i < results.Count; i++)
+            {
+                if (results[i].ReservationNumber >= FirstRN)
+                {
+                    continue;
+                }
+                var prevIndex = i;
+                var nextIndex = i;
+                while (--prevIndex >= 0 && results[prevIndex].ReservationNumber < FirstRN) { }
+
+                while (++nextIndex < results.Count && results[nextIndex].ReservationNumber <= FirstRN) { }
+
+                int dif = results[nextIndex].ReservationNumber - results[prevIndex].ReservationNumber;
+                if (dif > 1)
+                {
+                    results[i].ReservationNumber = results[prevIndex].ReservationNumber + 1;
+                }
+                else
+                {
+                    results[i].ReservationNumber = results[nextIndex].ReservationNumber + 1;
+                }
+                results[i].validRecord = ValidRecord.Yes;
+
+            }
+
+            results.Sort();
+
+            // fix for last record's RN being really large
+            for (var i = 1; i < results.Count; i++)
+            {
+                var prevIndex = i - 1;
+                int dif = results[i].ReservationNumber - results[prevIndex].ReservationNumber;
+                if (results[prevIndex].ReservationNumber != 0 && dif > 100000)
+                {
+                    if ((i + 1) >= results.Count)
+                    {
+                        results[i].ReservationNumber = results[prevIndex].ReservationNumber + 1;
+                    }
+                }
+            }
+
+
+            return results;
+        }
+
+        private static DateOnly DetermineDateFor(List<TrackerInfo> results, int index)
+        {
+            int offset = index;
+
+            while (--offset > 0)
+            {
+                if (results[offset].Date >= FirstOrderDate)
+                {
+                    return results[offset].Date;
+                }
+            }
+            offset = index;
+            while (++offset < results.Count)
+            {
+                if (results[offset].Date >= FirstOrderDate)
+                {
+                    return results[offset].Date;
+                }
+            }
+            return new DateOnly(9999, 1, 1);
+
+        }
+
+        public int CompareTo(TrackerInfo compareInfo)
+        {
+            int result = 0;
+            // A null value means that this object is greater.
+            if (compareInfo == null)
+            {
+                return 1;
+            }
+
+            if ((this.validRecord & ValidRecord.BadDate) == ValidRecord.BadDate || (compareInfo.validRecord & ValidRecord.BadDate) == ValidRecord.BadDate)
+            {
+                return this.ReservationNumber - compareInfo.ReservationNumber;
+            }
+
+            if ((this.validRecord & ValidRecord.BadRN) == ValidRecord.BadRN || (compareInfo.validRecord & ValidRecord.BadRN) == ValidRecord.BadRN)
+            {
+                result = this.Date.CompareTo(compareInfo.Date);
+                if (result == 0)
+                {
+                    result = this.Time.CompareTo(compareInfo.Time);
+                    if (result == 0)
+                    {
+                        if (this.ReservationNumber <= FirstRN)
+                        {
+                            return 1;
+                        }
+                        if (compareInfo.ReservationNumber <= FirstRN)
+                        {
+                            return -1;
+                        }
+                        return compareInfo.ReservationNumber - this.ReservationNumber;
+                    }
+                }
+                return result;
+            }
+
+            result = this.ReservationNumber - compareInfo.ReservationNumber;
+            if (result == 0)
+            {
+                result = this.Date.CompareTo(compareInfo.Date);
+                if (result == 0)
+                {
+                    result = this.Time.CompareTo(compareInfo.Time);
+                }
+            }
+            return result;
+
+        }
+
+        public bool Equals(TrackerInfo compareInfo)
+        {
+            if (compareInfo == null)
+            {
+                return false;
+            }
+            return (this.Index == compareInfo.Index);
+        }
+
         static internal bool ParseReservationNumber(TrackerInfo record, string value)
         {
             return int.TryParse(value, out record.ReservationNumber);
@@ -1209,6 +1409,14 @@ namespace TrackerData
 
         }
         #endregion
+    }
+
+    [Flags]
+    internal enum ValidRecord
+    {
+        Yes = 0,
+        BadDate = 1,
+        BadRN = 2
     }
 
     internal enum TrimEnum

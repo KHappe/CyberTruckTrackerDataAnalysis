@@ -195,20 +195,7 @@ namespace TrackerData
                 info.validRecord |= ValidRecord.BadDate;
             }
 
-            //var notSetDates = results.FindAll((d) =>
-            //{
-            //    return (d.Date.Year == 1 && d.Date.Month == 1 && d.Date.Day == 1);
-            //});
-
-
             results.Sort();
-
-            //for ( var i = 1830; i < 1880; i++)
-            //{
-            //    var prevIndex = i - 1;
-            //    var nextIndex = i + 1;
-            //    System.Diagnostics.Debugger.Break();
-            //}
 
             foreach (TrackerInfo info in badDates)
             {
@@ -217,6 +204,8 @@ namespace TrackerData
                 info.Date = date;
             }
 
+#if DEBUG
+            // making sure Reservation numbers are in order.
             for ( var i = 1; i < results.Count; i++)
             {
                 int prevIndex = i - 1;
@@ -231,7 +220,7 @@ namespace TrackerData
                     }
                 }
             }
-
+#endif
             for ( var i = 1; i < results.Count; i++)
             {
                 if (results[i].ReservationNumber >= FirstRN)
@@ -257,53 +246,9 @@ namespace TrackerData
 
             }
 
-            //foreach (TrackerInfo info in badRNs)
-            //{
-            //    var index = results.FindIndex((t) => t == info);
-            //    var rn = DetermineRNFor(results, index);
-            //    info.ReservationNumber = rn;
-            //}
-
-
-            //List<TrackerInfo> byDate = results.OrderBy(x => x.Date).ToList<TrackerInfo>();
-
-            //for( var i = 0; i < 100;i++)
-            //{
-            //    var record = results[i];
-            //    System.Diagnostics.Debug.WriteLine($"Index:{record.Index}, RN:{record.ReservationNumber}, Date:{record.Date}, Time:{record.Time} ");
-            //}
-
-
-            //int badRecordCount = 0;
-            //foreach (var result in results)
-            //{
-            //    if (!result.IsACyberTruck || result.ReservationNumber <= 112744100 || result.Date < FirstOrderDate)
-            //    {
-            //        result.abnormalRecord = true;
-            //        badRecordCount++;
-            //        continue;
-            //    }
-
-
-
-            //}
-
             results.Sort();
-            var found = false;
-            //for (var i = 1; i < results.Count - 1; i++)
-            //{
-            //    var nextIndex = i + 1;
-            //    if (results[i].ReservationNumber > results[nextIndex].ReservationNumber )
-            //    {
-            //        System.Diagnostics.Debugger.Break();
-            //    }
-            //    if ( results[i].ReservationNumber > FirstRN && !found)
-            //    {
-            //        System.Diagnostics.Debugger.Break();
-            //        found = true;
-            //    }
-            //}
 
+            // fix for last record's RN being really large
             for (var i = 1; i < results.Count; i++)
             {
                 var prevIndex = i - 1;
@@ -316,7 +261,6 @@ namespace TrackerData
                     }
                 }
             }
-
 
 
             return results;
@@ -343,37 +287,6 @@ namespace TrackerData
             }
             return new DateOnly(9999, 1, 1);
 
-        }
-
-        private static int DetermineRNFor(List<TrackerInfo> results, int index)
-        {
-            if ( index == results.Count - 1)
-            {
-                return results[index - 1].ReservationNumber + 1;
-            }
-
-            int prevIndex = index;
-            while (--prevIndex > 0 && (results[prevIndex].validRecord & ValidRecord.BadRN) == ValidRecord.BadRN) { }
-            int nextIndex = index;
-
-            while (++nextIndex < results.Count && (results[nextIndex].validRecord & ValidRecord.BadRN) == ValidRecord.BadRN) { }
-
-            int diff = results[nextIndex].ReservationNumber - results[prevIndex].ReservationNumber;
-            if ( diff > 1)
-            {
-                return results[prevIndex].ReservationNumber + 1;
-            }
-
-            while ( ++nextIndex < results.Count)
-            {
-                diff = results[nextIndex].ReservationNumber - results[prevIndex].ReservationNumber;
-                if (diff > 1)
-                {
-                    return results[nextIndex].ReservationNumber - 1;
-                }
-            }
-
-            return results[index].ReservationNumber;
         }
 
         public int CompareTo(TrackerInfo compareInfo)

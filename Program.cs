@@ -166,8 +166,8 @@ void SortByYearQuarter(IOrderedEnumerable<TrackerInfo> sortedList)
             RunningQtrTotals.CyberTruck += qtrTotals.CyberTruck;
         }
         Console.WriteLine($"\r\nEst. place in line from start of {i.Key}: {prevTotal:N0}");
-        Console.WriteLine($"\r\n RN Min:{ qtrTotals.MinResNbr} - {TrackerInfo.FirstRN} = {(qtrTotals.MinResNbr - TrackerInfo.FirstRN),7:N0}");
-        Console.WriteLine($"\r\n RN Max:{qtrTotals.MaxResNbr} - {TrackerInfo.FirstRN} = {(qtrTotals.MaxResNbr - TrackerInfo.FirstRN),7:N0}");
+        //Console.WriteLine($"\r\n RN Min:{ qtrTotals.MinResNbr} - {TrackerInfo.FirstRN} = {(qtrTotals.MinResNbr - TrackerInfo.FirstRN),7:N0}");
+        //Console.WriteLine($"\r\n RN Max:{qtrTotals.MaxResNbr} - {TrackerInfo.FirstRN} = {(qtrTotals.MaxResNbr - TrackerInfo.FirstRN),7:N0}");
         //Console.WriteLine($"\rReservation numbers ~{qtrTotals.MinResNbr} through ~{qtrTotals.MaxResNbr}");
         Console.WriteLine($"\tTx addr: {RunningQtrTotals.NonUS,7:N0}    NonUS :{RunningQtrTotals.NonUS,7:N0}");
         Console.WriteLine($"\t Single: {RunningQtrTotals.SingleMotor,7:N0}    Dual:  {RunningQtrTotals.DualMotor,7:N0}");

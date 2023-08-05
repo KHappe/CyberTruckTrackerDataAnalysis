@@ -6,7 +6,7 @@ using TimeZoneNames;
 
 namespace TrackerData
 {
-    internal class TrackerInfo
+    internal class TrackerInfo : IEquatable<TrackerInfo>, IComparable<TrackerInfo>
     {
         private static Dictionary<string, string> StateAbbreviations = new();
         private static List<ZipCodeLookup> ZipCodes = new();

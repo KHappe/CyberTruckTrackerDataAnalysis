@@ -32,17 +32,18 @@ var results = TrackerInfo.Parse(dataFileName);
 results = TrackerInfo.Normalize(results);
 
 
-var sortedList = results.OrderBy(r => r.ReservationNumber);
+//var sortedList = results.OrderBy(r => r.ReservationNumber);
 
-WriteMassagedFile(sortedList, "byRN.raw");
+//WriteMassagedFile(sortedList, "byRN.raw");
 
+fixRecords(results);
 //fixRecords(sortedList);
 
 ShowAssumptions();
 
 ShowQtrResults();
 
-sortedList = sortedList.OrderBy(r => r.Year)
+var sortedList = results.OrderBy(r => r.Year)
     //.ThenBy(r => r.Date.Month)
     .ThenBy(r => r.Qtr)
     .ThenBy(r => r.ReservationNumber);
@@ -50,7 +51,12 @@ sortedList = sortedList.OrderBy(r => r.Year)
 WriteMassagedFile(sortedList, "YearQtrRN");
 
 
-void fixRecords(IOrderedEnumerable<TrackerInfo> sortedList)
+//void fixRecords(IOrderedEnumerable<TrackerInfo> sortedList)
+//{
+
+//}
+
+void fixRecords(List<TrackerInfo> sortedList)
 {
 
     DateOnly lastDate = TrackerInfo.FirstDate;

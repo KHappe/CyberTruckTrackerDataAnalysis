@@ -1,4 +1,4 @@
-# CyberTruckTrackerDataAnalysis
+CyberTruckTrackerDataAnalysis
 The goal of the application is to try and do a better analysis of Reservations being tracked by
 the CyberTruck Data Tracker https://docs.google.com/spreadsheets/d/1--6OR9ECwSwZdkOtWkuslJVCyAAfQv1eJal1fdngfsk
 
@@ -22,9 +22,9 @@ However, the adjustments should not be significant.
 
 The total for Tx is a running total.
 
-Quarter: 2019 Q4
-   112,000 Deliveries for quarter. ( 3/Y: 92,550 S/X: 19,450) Data provided by Tesla.
-    62,769 deliveries prorated for first Qtr of CT orders
+    Quarter: 2019 Q4
+        112,000 Deliveries for quarter. ( 3/Y: 92,550 S/X: 19,450) Data provided by Tesla.
+        62,769 deliveries prorated for first Qtr of CT orders
 
         Tracker reservation numbers: ~112744101 thru ~113206814 =
         ~    462,713 Possible reservations.
@@ -35,8 +35,8 @@ Quarter: 2019 Q4
         =          0 Estimated place in line from start of Quarter.
 
 
-Quarter: 2020 Q1
-    88,400 Deliveries for quarter. ( 3/Y: 76,200 S/X: 12,200) Data provided by Tesla.
+    Quarter: 2020 Q1
+        88,400 Deliveries for quarter. ( 3/Y: 76,200 S/X: 12,200) Data provided by Tesla.
 
         Tracker reservation numbers: ~113206861 thru ~113382179 =
         ~    175,318 Possible reservations.
@@ -50,8 +50,8 @@ Quarter: 2020 Q1
         =    399,992 Estimated place in line from start of Quarter.
 
 
-Quarter: 2020 Q2
-    90,650 Deliveries for quarter. ( 3/Y: 80,050 S/X: 10,600) Data provided by Tesla.
+    Quarter: 2020 Q2
+        90,650 Deliveries for quarter. ( 3/Y: 80,050 S/X: 10,600) Data provided by Tesla.
 
         Tracker reservation numbers: ~113382208 thru ~113616808 =
         ~    234,600 Possible reservations.
@@ -65,8 +65,8 @@ Quarter: 2020 Q2
         =    486,939 Estimated place in line from start of Quarter.
 
 
-Quarter: 2020 Q3
-   139,300 Deliveries for quarter. ( 3/Y: 124,100 S/X: 15,200) Data provided by Tesla.
+    Quarter: 2020 Q3
+    139,300 Deliveries for quarter. ( 3/Y: 124,100 S/X: 15,200) Data provided by Tesla.
 
         Tracker reservation numbers: ~113616875 thru ~114046673 =
         ~    429,798 Possible reservations.
@@ -80,8 +80,8 @@ Quarter: 2020 Q3
         =    630,956 Estimated place in line from start of Quarter.
 
 
-Quarter: 2020 Q4
-   180,570 Deliveries for quarter. ( 3/Y: 161,650 S/X: 18,920) Data provided by Tesla.
+    Quarter: 2020 Q4
+    180,570 Deliveries for quarter. ( 3/Y: 161,650 S/X: 18,920) Data provided by Tesla.
 
         Tracker reservation numbers: ~114046780 thru ~114353977 =
         ~    307,197 Possible reservations.
@@ -95,8 +95,8 @@ Quarter: 2020 Q4
         =    921,561 Estimated place in line from start of Quarter.
 
 
-Quarter: 2021 Q1
-   184,800 Deliveries for quarter. ( 3/Y: 182,780 S/X: 2,020) Data provided by Tesla.
+    Quarter: 2021 Q1
+    184,800 Deliveries for quarter. ( 3/Y: 182,780 S/X: 2,020) Data provided by Tesla.
 
         Tracker reservation numbers: ~114354074 thru ~114751107 =
         ~    397,033 Possible reservations.
@@ -110,8 +110,8 @@ Quarter: 2021 Q1
         =  1,048,285 Estimated place in line from start of Quarter.
 
 
-Quarter: 2021 Q2
-   201,250 Deliveries for quarter. ( 3/Y: 199,360 S/X: 1,890) Data provided by Tesla.
+    Quarter: 2021 Q2
+    201,250 Deliveries for quarter. ( 3/Y: 199,360 S/X: 1,890) Data provided by Tesla.
 
         Tracker reservation numbers: ~114751370 thru ~115273263 =
         ~    521,893 Possible reservations.
@@ -125,8 +125,8 @@ Quarter: 2021 Q2
         =  1,260,781 Estimated place in line from start of Quarter.
 
 
-Quarter: 2021 Q3
-   241,300 Deliveries for quarter. ( 3/Y: 232,025 S/X: 9,275) Data provided by Tesla.
+    Quarter: 2021 Q3
+    241,300 Deliveries for quarter. ( 3/Y: 232,025 S/X: 9,275) Data provided by Tesla.
 
         Tracker reservation numbers: ~115273266 thru ~115781318 =
         ~    508,052 Possible reservations.
@@ -140,8 +140,8 @@ Quarter: 2021 Q3
         =  1,581,427 Estimated place in line from start of Quarter.
 
 
-Quarter: 2021 Q4
-   308,600 Deliveries for quarter. ( 3/Y: 296,850 S/X: 11,750) Data provided by Tesla.
+    Quarter: 2021 Q4
+    308,600 Deliveries for quarter. ( 3/Y: 296,850 S/X: 11,750) Data provided by Tesla.
 
         Tracker reservation numbers: ~115781399 thru ~116331975 =
         ~    550,576 Possible reservations.
@@ -155,8 +155,8 @@ Quarter: 2021 Q4
         =  1,848,260 Estimated place in line from start of Quarter.
 
 
-Quarter: 2022 Q2
-   254,695 Deliveries for quarter. ( 3/Y: 238,533 S/X: 16,162) Data provided by Tesla.
+    Quarter: 2022 Q2
+    254,695 Deliveries for quarter. ( 3/Y: 238,533 S/X: 16,162) Data provided by Tesla.
 
         Tracker reservation numbers: ~116914822 thru ~117514426 =
         ~    599,604 Possible reservations.
@@ -170,8 +170,8 @@ Quarter: 2022 Q2
         =  2,673,083 Estimated place in line from start of Quarter.
 
 
-Quarter: 2022 Q1
-   310,048 Deliveries for quarter. ( 3/Y: 295,324 S/X: 14,724) Data provided by Tesla.
+    Quarter: 2022 Q1
+    310,048 Deliveries for quarter. ( 3/Y: 295,324 S/X: 14,724) Data provided by Tesla.
 
         Tracker reservation numbers: ~116332376 thru ~116914469 =
         ~    582,093 Possible reservations.
@@ -185,8 +185,8 @@ Quarter: 2022 Q1
         =  1,835,942 Estimated place in line from start of Quarter.
 
 
-Quarter: 2022 Q3
-   343,830 Deliveries for quarter. ( 3/Y: 325,158 S/X: 18,672) Data provided by Tesla.
+    Quarter: 2022 Q3
+    343,830 Deliveries for quarter. ( 3/Y: 325,158 S/X: 18,672) Data provided by Tesla.
 
         Tracker reservation numbers: ~117516035 thru ~117957600 =
         ~    441,565 Possible reservations.
@@ -200,8 +200,8 @@ Quarter: 2022 Q3
         =  2,709,553 Estimated place in line from start of Quarter.
 
 
-Quarter: 2022 Q4
-   405,278 Deliveries for quarter. ( 3/Y: 388,131 S/X: 17,147) Data provided by Tesla.
+    Quarter: 2022 Q4
+    405,278 Deliveries for quarter. ( 3/Y: 388,131 S/X: 17,147) Data provided by Tesla.
 
         Tracker reservation numbers: ~117960090 thru ~118278384 =
         ~    318,294 Possible reservations.
@@ -215,8 +215,8 @@ Quarter: 2022 Q4
         =  2,809,778 Estimated place in line from start of Quarter.
 
 
-Quarter: 2023 Q1
-   422,875 Deliveries for quarter. ( 3/Y: 412,180 S/X: 10,695) Data provided by Tesla.
+    Quarter: 2023 Q1
+    422,875 Deliveries for quarter. ( 3/Y: 412,180 S/X: 10,695) Data provided by Tesla.
 
         Tracker reservation numbers: ~118279957 thru ~118850539 =
         ~    570,582 Possible reservations.
@@ -230,7 +230,7 @@ Quarter: 2023 Q1
         =  2,724,367 Estimated place in line from start of Quarter.
 
 
-Quarter: 2023 Q2
+    Quarter: 2023 Q2
          0 Deliveries for quarter. ( 3/Y: 0 S/X: 0) Data provided by Tesla.
 
         Tracker reservation numbers: ~118880732 thru ~119282705 =

@@ -68,15 +68,15 @@ void fixRecords(List<TrackerInfo> sortedList)
     {
         var record = theList[index];
         
-        lastDate = GetMedianDate(theList, index);
+        //lastDate = GetMedianDate(theList, index);
 
-        var dateDelta = Math.Abs(record.Date.DayNumber - lastDate.DayNumber);
+        //var dateDelta = Math.Abs(record.Date.DayNumber - lastDate.DayNumber);
 
-        if (record.Date < TrackerInfo.FirstDate || dateDelta > 2)
-        {
-            record.OriginalDate = record.Date;
-            record.Date = lastDate;
-        }
+        //if (record.Date < TrackerInfo.FirstDate || dateDelta > 2)
+        //{
+        //    record.OriginalDate = record.Date;
+        //    record.Date = lastDate;
+        //}
 
         UpdateYearQuarterTotals(record, index);
         //UpdateMonthlyTotals(record);
@@ -508,18 +508,31 @@ void ShowQtrResults()
 
         var message =
            $"\r\nQuarter: {kvp.Key}\r\n" +
-           $"{deliveries,10:N0} Deliveries for quarter. ( 3/Y: {model3YDeliveries:N0} S/X: {modelSXDeliveries:N0}) Data provided by Tesla.\r\n" +
-           $"\tTracker reservation numbers: ~{kvp.Value.MinResNbr:d6} thru ~{kvp.Value.MaxResNbr} = \r\n" +
+           $"{deliveries,10:N0} Deliveries for quarter. ( 3/Y: {model3YDeliveries:N0} S/X: {modelSXDeliveries:N0}) Data provided by Tesla.\r\n";
+
+        if ( kvp.Key == "2019 Q4")
+        {
+            var beginQtr = new DateOnly(2019, 10, 1).DayNumber;
+            var endQtr = new DateOnly(2019, 12, 31).DayNumber;
+            float proratedPercentage = (float)(TrackerInfo.FirstOrderDate.DayNumber - beginQtr) / (float)( endQtr - beginQtr);
+            deliveries = (int)Math.Floor((float)deliveries * proratedPercentage);
+            message += $"{deliveries,10:N0} deliveries prorated for first Qtr of CT orders\r\n";
+        }
+
+           message +=
+           //$"{prevQtrDeliveries,10:N0} Total previous deliveries.\r\n" +
+           $"\r\n\tTracker reservation numbers: ~{kvp.Value.MinResNbr:d6} thru ~{kvp.Value.MaxResNbr} = \r\n" +
            $"\t~ {kvp.Value.TotalReservations,10:N0} Possible reservations.\r\n" +
            $"\t  {totalsForTx,10:N0} Texas reservations. (info only - running total)\r\n" + 
            $"\t- {kvp.Value.NonUS,10:N0} Non US reservations.\r\n" +
-           $"\t- {cancelledDeliveries,10:N0} Estimated 5% cancelled orders.\r\n" +
+           $"\t- {cancelledDeliveries,10:N0} Estimated 5% cancelled orders. ={deliveries:N0} * .05\r\n" +
            $"\t= {qtrTotal,10:N0} Cyber truck orders for quarter.\r\n";
 
         var placeInLine = 0;
         if (kvp.Key != "2019 Q4")
         {
-            placeInLine = qtrTotal + previousCTOrders - prevQtrDeliveries;
+            //placeInLine = qtrTotal + previousCTOrders - prevQtrDeliveries;
+            placeInLine = kvp.Value.MinResNbr - TrackerInfo.FirstRN - prevQtrDeliveries;
         }
 
         if (kvp.Key == "2019 Q4")
@@ -528,8 +541,11 @@ void ShowQtrResults()
         }
         else
         {
-            message += $"\r\n\t+ {previousCTOrders,10:N0} Previous CT orders.\r\n" +
-                       $"\t- {prevQtrDeliveries,10:N0} Previous Qtr deliveries.\r\n" + 
+            //message += $"\r\n\t+ {previousCTOrders,10:N0} Previous CT orders.\r\n" +
+            //           $"\t- {prevQtrDeliveries,10:N0} Previous Qtr deliveries.\r\n" + 
+            //           $"\t= {placeInLine,10:N0} Estimated place in line from start of Quarter.\r\n";
+            message += $"\r\n\t+ {kvp.Value.MinResNbr - TrackerInfo.FirstRN,10:N0} Place in line. RN:{kvp.Value.MinResNbr} - {TrackerInfo.FirstRN}\r\n" +
+                       $"\t- {prevQtrDeliveries,10:N0} Previous Qtr deliveries.\r\n" +
                        $"\t= {placeInLine,10:N0} Estimated place in line from start of Quarter.\r\n";
         }
         
@@ -546,7 +562,7 @@ void ShowQtrResults()
 
         Console.WriteLine(message);
 
-        prevQtrDeliveries = deliveries;
+        prevQtrDeliveries += deliveries;
 
         previousCTOrders += qtrTotal;
 

@@ -1405,6 +1405,14 @@ namespace TrackerData
                     ModelSX = 10695
                 }
             );
+            key = "2023 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 446915,
+                    ModelSX = 19225
+                }
+            );
 
 
         }

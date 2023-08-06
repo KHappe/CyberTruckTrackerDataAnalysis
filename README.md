@@ -231,14 +231,14 @@ The total for Tx is a running total.
 
 
     Quarter: 2023 Q2
-         0 Deliveries for quarter. ( 3/Y: 0 S/X: 0) Data provided by Tesla.
+    466,140 Deliveries for quarter. ( 3/Y: 446,915 S/X: 19,225) Data provided by Tesla.
 
         Tracker reservation numbers: ~118880732 thru ~119282705 =
         ~    401,973 Possible reservations.
                3,794 Texas reservations. (info only - running total)
         -          1 Non US reservations.
-        -          0 Estimated 5% cancelled orders. =0 * .05
-        =    399,474 Cyber truck orders for quarter.
+        -     23,307 Estimated 5% cancelled orders. =466,140 * .05
+        =    376,167 Cyber truck orders for quarter.
 
         +  6,136,632 Place in line. RN:118880732 - 112744100
         -  3,234,365 Previous Qtr deliveries.

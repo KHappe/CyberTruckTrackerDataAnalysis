@@ -24,206 +24,222 @@ The total for Tx is a running total.
 
 Quarter: 2019 Q4
    112,000 Deliveries for quarter. ( 3/Y: 92,550 S/X: 19,450) Data provided by Tesla.
-        Tracker reservation numbers: ~112744124 thru ~113200332 =
-        ~    456,208 Possible reservations.
-               1,850 Texas reservations. (info only - running total)
-        -      1,386 Non US reservations.
-        -      5,600 Estimated 5% cancelled orders.
-        =    449,222 Cyber truck orders for quarter.
+    62,769 deliveries prorated for first Qtr of CT orders
+
+        Tracker reservation numbers: ~112744101 thru ~113206814 =
+        ~    462,713 Possible reservations.
+               1,881 Texas reservations. (info only - running total)
+        -      1,402 Non US reservations.
+        -      5,600 Estimated 5% cancelled orders. =62,769 * .05
+        =    455,711 Cyber truck orders for quarter.
         =          0 Estimated place in line from start of Quarter.
 
 
 Quarter: 2020 Q1
     88,400 Deliveries for quarter. ( 3/Y: 76,200 S/X: 12,200) Data provided by Tesla.
-        Tracker reservation numbers: ~113200353 thru ~113367251 =
-        ~    166,898 Possible reservations.
-               2,064 Texas reservations. (info only - running total)
-        -        171 Non US reservations.
-        -      4,420 Estimated 5% cancelled orders.
-        =    160,921 Cyber truck orders for quarter.
 
-        +    449,222 Previous CT orders.
-        -    112,000 Previous Qtr deliveries.
-        =    498,143 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~113206861 thru ~113382179 =
+        ~    175,318 Possible reservations.
+               2,103 Texas reservations. (info only - running total)
+        -        184 Non US reservations.
+        -      4,420 Estimated 5% cancelled orders. =88,400 * .05
+        =    169,312 Cyber truck orders for quarter.
+
+        +    462,761 Place in line. RN:113206861 - 112744100
+        -     62,769 Previous Qtr deliveries.
+        =    399,992 Estimated place in line from start of Quarter.
 
 
 Quarter: 2020 Q2
     90,650 Deliveries for quarter. ( 3/Y: 80,050 S/X: 10,600) Data provided by Tesla.
-        Tracker reservation numbers: ~113367312 thru ~113597270 =
-        ~    229,958 Possible reservations.
-               2,364 Texas reservations. (info only - running total)
-        -        263 Non US reservations.
-        -      4,532 Estimated 5% cancelled orders.
-        =    223,606 Cyber truck orders for quarter.
 
-        +    610,143 Previous CT orders.
-        -     88,400 Previous Qtr deliveries.
-        =    745,349 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~113382208 thru ~113616808 =
+        ~    234,600 Possible reservations.
+               2,400 Texas reservations. (info only - running total)
+        -        250 Non US reservations.
+        -      4,532 Estimated 5% cancelled orders. =90,650 * .05
+        =    228,232 Cyber truck orders for quarter.
+
+        +    638,108 Place in line. RN:113382208 - 112744100
+        -    151,169 Previous Qtr deliveries.
+        =    486,939 Estimated place in line from start of Quarter.
 
 
 Quarter: 2020 Q3
    139,300 Deliveries for quarter. ( 3/Y: 124,100 S/X: 15,200) Data provided by Tesla.
-        Tracker reservation numbers: ~113597364 thru ~114005887 =
-        ~    408,523 Possible reservations.
-               2,647 Texas reservations. (info only - running total)
-        -        150 Non US reservations.
-        -      6,965 Estimated 5% cancelled orders.
-        =    399,588 Cyber truck orders for quarter.
 
-        +    833,749 Previous CT orders.
-        -     90,650 Previous Qtr deliveries.
-        =  1,142,687 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~113616875 thru ~114046673 =
+        ~    429,798 Possible reservations.
+               2,680 Texas reservations. (info only - running total)
+        -        145 Non US reservations.
+        -      6,965 Estimated 5% cancelled orders. =139,300 * .05
+        =    420,852 Cyber truck orders for quarter.
+
+        +    872,775 Place in line. RN:113616875 - 112744100
+        -    241,819 Previous Qtr deliveries.
+        =    630,956 Estimated place in line from start of Quarter.
 
 
 Quarter: 2020 Q4
    180,570 Deliveries for quarter. ( 3/Y: 161,650 S/X: 18,920) Data provided by Tesla.
-        Tracker reservation numbers: ~114005887 thru ~114335662 =
-        ~    329,775 Possible reservations.
-               2,852 Texas reservations. (info only - running total)
-        -        100 Non US reservations.
-        -      9,028 Estimated 5% cancelled orders.
-        =    318,677 Cyber truck orders for quarter.
 
-        +  1,233,337 Previous CT orders.
-        -    139,300 Previous Qtr deliveries.
-        =  1,412,714 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~114046780 thru ~114353977 =
+        ~    307,197 Possible reservations.
+               2,888 Texas reservations. (info only - running total)
+        -         99 Non US reservations.
+        -      9,028 Estimated 5% cancelled orders. =180,570 * .05
+        =    296,089 Cyber truck orders for quarter.
+
+        +  1,302,680 Place in line. RN:114046780 - 112744100
+        -    381,119 Previous Qtr deliveries.
+        =    921,561 Estimated place in line from start of Quarter.
 
 
 Quarter: 2021 Q1
    184,800 Deliveries for quarter. ( 3/Y: 182,780 S/X: 2,020) Data provided by Tesla.
-        Tracker reservation numbers: ~114335662 thru ~114730961 =
-        ~    395,299 Possible reservations.
-               3,066 Texas reservations. (info only - running total)
-        -        100 Non US reservations.
-        -      9,240 Estimated 5% cancelled orders.
-        =    383,889 Cyber truck orders for quarter.
 
-        +  1,552,014 Previous CT orders.
-        -    180,570 Previous Qtr deliveries.
-        =  1,755,333 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~114354074 thru ~114751107 =
+        ~    397,033 Possible reservations.
+               3,096 Texas reservations. (info only - running total)
+        -        104 Non US reservations.
+        -      9,240 Estimated 5% cancelled orders. =184,800 * .05
+        =    385,609 Cyber truck orders for quarter.
+
+        +  1,609,974 Place in line. RN:114354074 - 112744100
+        -    561,689 Previous Qtr deliveries.
+        =  1,048,285 Estimated place in line from start of Quarter.
 
 
 Quarter: 2021 Q2
    201,250 Deliveries for quarter. ( 3/Y: 199,360 S/X: 1,890) Data provided by Tesla.
-        Tracker reservation numbers: ~114731065 thru ~115239436 =
-        ~    508,371 Possible reservations.
-               3,300 Texas reservations. (info only - running total)
-        -        138 Non US reservations.
-        -     10,062 Estimated 5% cancelled orders.
-        =    496,001 Cyber truck orders for quarter.
 
-        +  1,935,903 Previous CT orders.
-        -    184,800 Previous Qtr deliveries.
-        =  2,247,104 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~114751370 thru ~115273263 =
+        ~    521,893 Possible reservations.
+               3,319 Texas reservations. (info only - running total)
+        -        127 Non US reservations.
+        -     10,062 Estimated 5% cancelled orders. =201,250 * .05
+        =    509,520 Cyber truck orders for quarter.
+
+        +  2,007,270 Place in line. RN:114751370 - 112744100
+        -    746,489 Previous Qtr deliveries.
+        =  1,260,781 Estimated place in line from start of Quarter.
 
 
 Quarter: 2021 Q3
    241,300 Deliveries for quarter. ( 3/Y: 232,025 S/X: 9,275) Data provided by Tesla.
-        Tracker reservation numbers: ~115239499 thru ~115750658 =
-        ~    511,159 Possible reservations.
-               3,477 Texas reservations. (info only - running total)
-        -         96 Non US reservations.
-        -     12,065 Estimated 5% cancelled orders.
-        =    496,690 Cyber truck orders for quarter.
 
-        +  2,431,904 Previous CT orders.
-        -    201,250 Previous Qtr deliveries.
-        =  2,727,344 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~115273266 thru ~115781318 =
+        ~    508,052 Possible reservations.
+               3,482 Texas reservations. (info only - running total)
+        -         77 Non US reservations.
+        -     12,065 Estimated 5% cancelled orders. =241,300 * .05
+        =    493,599 Cyber truck orders for quarter.
+
+        +  2,529,166 Place in line. RN:115273266 - 112744100
+        -    947,739 Previous Qtr deliveries.
+        =  1,581,427 Estimated place in line from start of Quarter.
 
 
 Quarter: 2021 Q4
    308,600 Deliveries for quarter. ( 3/Y: 296,850 S/X: 11,750) Data provided by Tesla.
-        Tracker reservation numbers: ~115750778 thru ~116307813 =
-        ~    557,035 Possible reservations.
-               3,596 Texas reservations. (info only - running total)
-        -         77 Non US reservations.
-        -     15,430 Estimated 5% cancelled orders.
-        =    539,124 Cyber truck orders for quarter.
 
-        +  2,928,594 Previous CT orders.
-        -    241,300 Previous Qtr deliveries.
-        =  3,226,418 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~115781399 thru ~116331975 =
+        ~    550,576 Possible reservations.
+               3,589 Texas reservations. (info only - running total)
+        -         64 Non US reservations.
+        -     15,430 Estimated 5% cancelled orders. =308,600 * .05
+        =    532,694 Cyber truck orders for quarter.
 
-
-Quarter: 2022 Q1
-   310,048 Deliveries for quarter. ( 3/Y: 295,324 S/X: 14,724) Data provided by Tesla.
-        Tracker reservation numbers: ~116308235 thru ~116880204 =
-        ~    571,969 Possible reservations.
-               3,652 Texas reservations. (info only - running total)
-        -         35 Non US reservations.
-        -     15,502 Estimated 5% cancelled orders.
-        =    553,951 Cyber truck orders for quarter.
-
-        +  3,467,718 Previous CT orders.
-        -    308,600 Previous Qtr deliveries.
-        =  3,713,069 Estimated place in line from start of Quarter.
+        +  3,037,299 Place in line. RN:115781399 - 112744100
+        -  1,189,039 Previous Qtr deliveries.
+        =  1,848,260 Estimated place in line from start of Quarter.
 
 
 Quarter: 2022 Q2
    254,695 Deliveries for quarter. ( 3/Y: 238,533 S/X: 16,162) Data provided by Tesla.
-        Tracker reservation numbers: ~116882431 thru ~117490485 =
-        ~    608,054 Possible reservations.
-               3,732 Texas reservations. (info only - running total)
-        -         49 Non US reservations.
-        -     12,735 Estimated 5% cancelled orders.
-        =    592,754 Cyber truck orders for quarter.
 
-        +  4,021,669 Previous CT orders.
-        -    310,048 Previous Qtr deliveries.
-        =  4,304,375 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~116914822 thru ~117514426 =
+        ~    599,604 Possible reservations.
+               3,657 Texas reservations. (info only - running total)
+        -         25 Non US reservations.
+        -     12,735 Estimated 5% cancelled orders. =254,695 * .05
+        =    584,392 Cyber truck orders for quarter.
+
+        +  4,170,722 Place in line. RN:116914822 - 112744100
+        -  1,497,639 Previous Qtr deliveries.
+        =  2,673,083 Estimated place in line from start of Quarter.
+
+
+Quarter: 2022 Q1
+   310,048 Deliveries for quarter. ( 3/Y: 295,324 S/X: 14,724) Data provided by Tesla.
+
+        Tracker reservation numbers: ~116332376 thru ~116914469 =
+        ~    582,093 Possible reservations.
+               3,708 Texas reservations. (info only - running total)
+        -         17 Non US reservations.
+        -     15,502 Estimated 5% cancelled orders. =310,048 * .05
+        =    564,097 Cyber truck orders for quarter.
+
+        +  3,588,276 Place in line. RN:116332376 - 112744100
+        -  1,752,334 Previous Qtr deliveries.
+        =  1,835,942 Estimated place in line from start of Quarter.
 
 
 Quarter: 2022 Q3
    343,830 Deliveries for quarter. ( 3/Y: 325,158 S/X: 18,672) Data provided by Tesla.
-        Tracker reservation numbers: ~117490970 thru ~117947824 =
-        ~    456,854 Possible reservations.
-               3,763 Texas reservations. (info only - running total)
-        -         10 Non US reservations.
-        -     17,192 Estimated 5% cancelled orders.
-        =    437,087 Cyber truck orders for quarter.
 
-        +  4,614,423 Previous CT orders.
-        -    254,695 Previous Qtr deliveries.
-        =  4,796,815 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~117516035 thru ~117957600 =
+        ~    441,565 Possible reservations.
+               3,737 Texas reservations. (info only - running total)
+        -          0 Non US reservations.
+        -     17,192 Estimated 5% cancelled orders. =343,830 * .05
+        =    421,879 Cyber truck orders for quarter.
+
+        +  4,771,935 Place in line. RN:117516035 - 112744100
+        -  2,062,382 Previous Qtr deliveries.
+        =  2,709,553 Estimated place in line from start of Quarter.
 
 
 Quarter: 2022 Q4
    405,278 Deliveries for quarter. ( 3/Y: 388,131 S/X: 17,147) Data provided by Tesla.
-        Tracker reservation numbers: ~117948189 thru ~118267942 =
-        ~    319,753 Possible reservations.
-               3,788 Texas reservations. (info only - running total)
-        -          7 Non US reservations.
-        -     20,264 Estimated 5% cancelled orders.
-        =    296,907 Cyber truck orders for quarter.
 
-        +  5,051,510 Previous CT orders.
-        -    343,830 Previous Qtr deliveries.
-        =  5,004,587 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~117960090 thru ~118278384 =
+        ~    318,294 Possible reservations.
+               3,761 Texas reservations. (info only - running total)
+        -          1 Non US reservations.
+        -     20,264 Estimated 5% cancelled orders. =405,278 * .05
+        =    295,535 Cyber truck orders for quarter.
+
+        +  5,215,990 Place in line. RN:117960090 - 112744100
+        -  2,406,212 Previous Qtr deliveries.
+        =  2,809,778 Estimated place in line from start of Quarter.
 
 
 Quarter: 2023 Q1
    422,875 Deliveries for quarter. ( 3/Y: 412,180 S/X: 10,695) Data provided by Tesla.
-        Tracker reservation numbers: ~118269364 thru ~118840092 =
-        ~    570,728 Possible reservations.
-               3,811 Texas reservations. (info only - running total)
-        -         22 Non US reservations.
-        -     21,144 Estimated 5% cancelled orders.
-        =    546,980 Cyber truck orders for quarter.
 
-        +  5,348,417 Previous CT orders.
-        -    405,278 Previous Qtr deliveries.
-        =  5,490,119 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~118279957 thru ~118850539 =
+        ~    570,582 Possible reservations.
+               3,781 Texas reservations. (info only - running total)
+        -          3 Non US reservations.
+        -     21,144 Estimated 5% cancelled orders. =422,875 * .05
+        =    546,940 Cyber truck orders for quarter.
+
+        +  5,535,857 Place in line. RN:118279957 - 112744100
+        -  2,811,490 Previous Qtr deliveries.
+        =  2,724,367 Estimated place in line from start of Quarter.
 
 
 Quarter: 2023 Q2
          0 Deliveries for quarter. ( 3/Y: 0 S/X: 0) Data provided by Tesla.
-        Tracker reservation numbers: ~118840271 thru ~119282704 =
-        ~    442,433 Possible reservations.
-               3,828 Texas reservations. (info only - running total)
-        -          9 Non US reservations.
-        -          0 Estimated 5% cancelled orders.
-        =    439,820 Cyber truck orders for quarter.
 
-        +  5,895,397 Previous CT orders.
-        -    422,875 Previous Qtr deliveries.
-        =  5,912,342 Estimated place in line from start of Quarter.
+        Tracker reservation numbers: ~118880732 thru ~119282705 =
+        ~    401,973 Possible reservations.
+               3,794 Texas reservations. (info only - running total)
+        -          1 Non US reservations.
+        -          0 Estimated 5% cancelled orders. =0 * .05
+        =    399,474 Cyber truck orders for quarter.
+
+        +  6,136,632 Place in line. RN:118880732 - 112744100
+        -  3,234,365 Previous Qtr deliveries.
+        =  2,902,267 Estimated place in line from start of Quarter.

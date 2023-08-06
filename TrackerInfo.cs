@@ -1,11 +1,7 @@
 ﻿// tracker data @ https://docs.google.com/spreadsheets/d/1--6OR9ECwSwZdkOtWkuslJVCyAAfQv1eJal1fdngfsk/edit#gid=0
 
 using CsvHelper;
-using Microsoft.VisualBasic;
-using System.Collections.Generic;
-using System.Diagnostics.SymbolStore;
 using System.Globalization;
-using System.Reflection;
 using TimeZoneNames;
 
 namespace TrackerData
@@ -15,17 +11,22 @@ namespace TrackerData
         private static Dictionary<string, string> StateAbbreviations = new();
         private static List<ZipCodeLookup> ZipCodes = new();
         private static int EmptyModels = 0;
-        internal static Dictionary<string, Deliveries> DeliversPerQuarter = new();
+        internal static Dictionary<string,Deliveries> DeliversPerQuarter = new();
+        internal static DateOnly FirstDate = new DateOnly(2019,11,21);
         internal static int FirstRN = 112744100;
+        internal static int MaxRN   = 200000000;
         internal static int FirstRN_2020 = 112808705; // Estimate from tracker spreadsheet
         internal static int LastRN_2019 = FirstRN_2020 - 1;
-        internal static DateOnly FirstOrderDate = new DateOnly(2019, 11, 21);
+        internal static DateOnly FirstOrderDate = new DateOnly(2019,11,21);
 
 
         internal DateOnly Date;
+        internal DateOnly LastDate;
         internal TimeOnly Time;
+        internal DateOnly OriginalDate;
         internal string TimeZone = string.Empty;
         internal int ReservationNumber;
+        internal int OriginalReservationNumber;
         internal string Address = string.Empty;
         internal bool US;
         internal string State = string.Empty;
@@ -35,15 +36,25 @@ namespace TrackerData
         internal TrimEnum Trim;
         internal bool FSD;
         internal bool TeslaOwner;
+        internal bool BadData;
         internal int Index;
         internal bool abnormalRecord = false;
         internal ValidRecord validRecord = ValidRecord.Yes;
+
+
+
+        internal int Year
+        {
+            get {
+                return Date.Year;
+            }
+        }
 
         internal int Qtr
         {
             get
             {
-                switch (Date.Month)
+                switch( Date.Month)
                 {
                     case 1:
                     case 2:
@@ -60,6 +71,14 @@ namespace TrackerData
                     default:
                         return 4;
                 }
+            }
+        }
+
+        internal string Key
+        {
+            get
+            {
+                return $"{Year:d4} Q{Qtr}";
             }
         }
         internal bool IsACar
@@ -166,10 +185,10 @@ namespace TrackerData
                 var toEarlyDate = d.Date < FirstOrderDate;
                 var badRn = d.ReservationNumber <= FirstRN;
 
-                return ( toEarlyDate || notSetDate ) && badRn;
+                return (toEarlyDate || notSetDate) && badRn;
             });
 
-            foreach(TrackerInfo info in badEntries)
+            foreach (TrackerInfo info in badEntries)
             {
                 results.Remove(info);
             }
@@ -179,7 +198,7 @@ namespace TrackerData
                 return d.ReservationNumber < FirstRN;
             });
 
-            foreach( var info in badRNs)
+            foreach (var info in badRNs)
             {
                 info.validRecord |= ValidRecord.BadRN;
             }
@@ -191,7 +210,8 @@ namespace TrackerData
                 return notSetDate || toEarlyDate;
             });
 
-            foreach(TrackerInfo info in badDates) {
+            foreach (TrackerInfo info in badDates)
+            {
                 info.validRecord |= ValidRecord.BadDate;
             }
 
@@ -206,7 +226,7 @@ namespace TrackerData
 
 #if DEBUG
             // making sure Reservation numbers are in order.
-            for ( var i = 1; i < results.Count; i++)
+            for (var i = 1; i < results.Count; i++)
             {
                 int prevIndex = i - 1;
                 int nextIndex = i + 1;
@@ -221,7 +241,7 @@ namespace TrackerData
                 }
             }
 #endif
-            for ( var i = 1; i < results.Count; i++)
+            for (var i = 1; i < results.Count; i++)
             {
                 if (results[i].ReservationNumber >= FirstRN)
                 {
@@ -234,7 +254,7 @@ namespace TrackerData
                 while (++nextIndex < results.Count && results[nextIndex].ReservationNumber <= FirstRN) { }
 
                 int dif = results[nextIndex].ReservationNumber - results[prevIndex].ReservationNumber;
-                if ( dif > 1)
+                if (dif > 1)
                 {
                     results[i].ReservationNumber = results[prevIndex].ReservationNumber + 1;
                 }
@@ -255,7 +275,7 @@ namespace TrackerData
                 int dif = results[i].ReservationNumber - results[prevIndex].ReservationNumber;
                 if (results[prevIndex].ReservationNumber != 0 && dif > 100000)
                 {
-                    if ( (i + 1) >= results.Count)
+                    if ((i + 1) >= results.Count)
                     {
                         results[i].ReservationNumber = results[prevIndex].ReservationNumber + 1;
                     }
@@ -298,12 +318,12 @@ namespace TrackerData
                 return 1;
             }
 
-            if ( (this.validRecord & ValidRecord.BadDate) == ValidRecord.BadDate || (compareInfo.validRecord & ValidRecord.BadDate) == ValidRecord.BadDate)
+            if ((this.validRecord & ValidRecord.BadDate) == ValidRecord.BadDate || (compareInfo.validRecord & ValidRecord.BadDate) == ValidRecord.BadDate)
             {
                 return this.ReservationNumber - compareInfo.ReservationNumber;
             }
 
-            if ((this.validRecord & ValidRecord.BadRN) == ValidRecord.BadRN ||(compareInfo.validRecord & ValidRecord.BadRN) == ValidRecord.BadRN)
+            if ((this.validRecord & ValidRecord.BadRN) == ValidRecord.BadRN || (compareInfo.validRecord & ValidRecord.BadRN) == ValidRecord.BadRN)
             {
                 result = this.Date.CompareTo(compareInfo.Date);
                 if (result == 0)
@@ -311,7 +331,7 @@ namespace TrackerData
                     result = this.Time.CompareTo(compareInfo.Time);
                     if (result == 0)
                     {
-                        if ( this.ReservationNumber <= FirstRN)
+                        if (this.ReservationNumber <= FirstRN)
                         {
                             return 1;
                         }
@@ -326,10 +346,10 @@ namespace TrackerData
             }
 
             result = this.ReservationNumber - compareInfo.ReservationNumber;
-            if ( result == 0)
+            if (result == 0)
             {
                 result = this.Date.CompareTo(compareInfo.Date);
-                if ( result == 0)
+                if (result == 0)
                 {
                     result = this.Time.CompareTo(compareInfo.Time);
                 }
@@ -346,7 +366,6 @@ namespace TrackerData
             }
             return (this.Index == compareInfo.Index);
         }
-
 
         static internal bool ParseReservationNumber(TrackerInfo record, string value)
         {
@@ -426,7 +445,7 @@ namespace TrackerData
             return false;
         }
 
-        static internal bool StringToBool(string value)
+        static internal bool StringToBool( string value)
         {
             if (string.IsNullOrEmpty(value))
                 return false;
@@ -444,20 +463,35 @@ namespace TrackerData
         }
         static internal bool ParseTime(TrackerInfo record, string value)
         {
-            bool result;
-            result = TimeOnly.TryParse(value, out record.Time);
-            if (!result)
-            {
-                record.Time = new TimeOnly(23, 59, 59);
-            }
-            return result;
+            return TimeOnly.TryParse(value, out record.Time);
         }
 
         static internal bool ParseTimeZone(TrackerInfo record, string value)
         {
-            record.TimeZone = value;
+            record.TimeZone = value.ToUpper();
             // figure this out later
             //var tzNames = TZNames.GetDisplayNames("en-US");
+    
+            switch(record.TimeZone)
+            {
+                case "ET":
+                case "EDT":
+                case "EST":
+
+                case "CT":
+                case "CDT":
+                case "CST":
+
+                case "MT":
+                case "MDT":
+                case "MST":
+
+                case "PT":
+                case "PDT":
+                case "PST":
+                    record.US = true;
+                    break;
+            }
 
             return true;
         }
@@ -475,7 +509,7 @@ namespace TrackerData
 
             record.US = true;
 
-            string address = value.Replace(",", "");
+            string address = value.Replace(",","");
             address = address.Replace(record.State, "");
             address = address.Replace(record.ZipCode.ToString(), "").Trim();
 
@@ -485,17 +519,17 @@ namespace TrackerData
             }
             var stateName = StateAbbreviations[record.State];
             int pos = address.IndexOf(stateName, StringComparison.OrdinalIgnoreCase);
-            if (pos >= 0)
+            if ( pos >= 0)
             {
                 var name = address.Substring(pos, stateName.Length);
                 address = address.Replace(name, "");  // may be lower case etc what ever.
             }
-            if (address.Length > 0)
+            if ( address.Length > 0 )
             {
                 address += ", ";
             }
             address += record.State;
-            if (record.ZipCode != 0)
+            if ( record.ZipCode != 0)
             {
                 address += " " + record.ZipCode;
             }
@@ -515,7 +549,7 @@ namespace TrackerData
             foreach (var f in fields)
             {
                 var field = f.ToUpper();
-                if (field.Length == 0)
+                if ( field.Length == 0)
                 {
                     continue;
                 }
@@ -532,10 +566,10 @@ namespace TrackerData
                 if (field.Length >= 4 && field.Length <= 5)
                 {
                     int zip;
-                    if (int.TryParse(field, out zip))
+                    if ( int.TryParse(field, out zip))
                     {
                         var zipCode = FindZip(zip);
-                        if (zipCode != null)
+                        if( zipCode != null )
                         {
                             record.State = zipCode.State;
                             record.ZipCode = zip;
@@ -547,12 +581,12 @@ namespace TrackerData
             return successful;
         }
 
-        private static ZipCodeLookup FindZip(int value)
+        private static ZipCodeLookup FindZip( int value)
         {
             AddZipCodes();
-            foreach (var item in ZipCodes)
+            foreach( var item in ZipCodes)
             {
-                if (value >= item.ZipMin && value <= item.ZipMax)
+                if ( value >= item.ZipMin && value <= item.ZipMax )
                 {
                     return item;
                 }
@@ -725,7 +759,7 @@ namespace TrackerData
             ZipCodes.Add(new ZipCodeLookup
             {
                 State = "GA",
-                SubArea = "1",
+                SubArea= "1",
                 ZipMin = 39901,
                 ZipMax = 39901
             });
@@ -995,7 +1029,7 @@ namespace TrackerData
             ZipCodes.Add(new ZipCodeLookup
             {
                 State = "TX",
-                SubArea = "Austin",
+                SubArea = "Austin", 
                 ZipMin = 73301,
                 ZipMax = 73301
             });
@@ -1089,14 +1123,182 @@ namespace TrackerData
         static private void AddDeliveries()
         {
             // delivery numbers are from https://ir.tesla.com/#quarterly-disclosure
-            var key = "2019 Q4";
+            var key = "";
+
+            key = "2015 Q1";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
-                    Model3Y = 39934, // total nbr of CY reservations in the Tracker
+                    Model3Y = 0,
                     ModelSX = 0
                 }
             );
+
+            key = "2015 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 11507
+                }
+            );
+
+            key = "2015 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 11580
+                }
+            );
+
+            key = "2015 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 0
+                }
+            );
+
+            key = "2016 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 12420 + 2400
+                }
+            );
+
+            key = "2016 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 9745 + 4625
+                }
+            );
+
+            key = "2016 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 15800 + 8700
+                }
+            );
+
+            key = "2016 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 12700 + 9500
+                }
+            );
+
+
+
+            key = "2017 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 13450 + 11550
+                }
+            );
+            key = "2017 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 0,
+                    ModelSX = 12000+10000
+                }
+            );
+            key = "2017 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 220,
+                    ModelSX = 14065 + 11865
+                }
+            );
+            key = "2017 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 1550,
+                    ModelSX = 15200 + 13120
+                }
+            );
+
+
+            key = "2018 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 8180,
+                    ModelSX = 21800
+                }
+            );
+            key = "2018 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 18440,
+                    ModelSX = 10930 + 11370
+                }
+            );
+            key = "2018 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 55840,
+                    ModelSX = 14470 + 13190
+                }
+            );
+            key = "2018 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 63150,
+                    ModelSX = 13500+14050
+                }
+            );
+
+            key = "2019 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 50900,
+                    ModelSX = 12100
+                }
+            );
+            key = "2019 Q2";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 77550,
+                    ModelSX = 17650
+                }
+            );
+            key = "2019 Q3";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 79600, 
+                    ModelSX = 17400
+                }
+            );
+            key = "2019 Q4";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 92550,
+                    ModelSX = 19450
+                }
+            );
+
             key = "2020 Q1";
             DeliversPerQuarter.Add(key,
                 new Deliveries
@@ -1126,7 +1328,7 @@ namespace TrackerData
                 new Deliveries
                 {
                     Model3Y = 161650,
-                    ModelSX = 16097
+                    ModelSX = 18920
                 }
             );
 
@@ -1142,16 +1344,16 @@ namespace TrackerData
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
-                    Model3Y = 204081,
-                    ModelSX = 2340
+                    Model3Y = 199360,
+                    ModelSX = 1890
                 }
             );
             key = "2021 Q3";
             DeliversPerQuarter.Add(key,
                 new Deliveries
                 {
-                    Model3Y = 228882,
-                    ModelSX = 8941
+                    Model3Y = 232025,
+                    ModelSX = 9275
                 }
             );
             key = "2021 Q4";
@@ -1195,16 +1397,22 @@ namespace TrackerData
                     ModelSX = 17147
                 }
             );
+            key = "2023 Q1";
+            DeliversPerQuarter.Add(key,
+                new Deliveries
+                {
+                    Model3Y = 412180,
+                    ModelSX = 10695
+                }
+            );
 
 
         }
-
-
         #endregion
     }
 
     [Flags]
-    internal enum ValidRecord 
+    internal enum ValidRecord
     {
         Yes = 0,
         BadDate = 1,
@@ -1255,6 +1463,8 @@ namespace TrackerData
     {
         internal int MinResNbr;
         internal int MaxResNbr;
+        internal int MinResIndex;
+        internal int MaxResIndex;
         internal int InTx;
         internal int NonUS;
         internal int SingleMotor;
@@ -1262,10 +1472,19 @@ namespace TrackerData
         internal int TriMotor;
         internal int QuadMotor;
         internal int CyberTruck;
+        internal DateOnly MinResNbrDate;
+        internal DateOnly MaxResNbrDate;
         internal QtrTotals()
         {
             this.MinResNbr = int.MaxValue;
             this.MaxResNbr = int.MinValue;
+        }
+        internal int TotalReservations
+        {
+            get
+            {
+                return this.MaxResNbr - this.MinResNbr;
+            }
         }
     }
 }

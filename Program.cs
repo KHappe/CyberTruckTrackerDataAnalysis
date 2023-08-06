@@ -519,14 +519,14 @@ void ShowQtrResults()
             message += $"{deliveries,10:N0} deliveries prorated for first Qtr of CT orders\r\n";
         }
 
-           message +=
-           //$"{prevQtrDeliveries,10:N0} Total previous deliveries.\r\n" +
-           $"\r\n\tTracker reservation numbers: ~{kvp.Value.MinResNbr:d6} thru ~{kvp.Value.MaxResNbr} = \r\n" +
-           $"\t~ {kvp.Value.TotalReservations,10:N0} Possible reservations.\r\n" +
-           $"\t  {totalsForTx,10:N0} Texas reservations. (info only - running total)\r\n" + 
-           $"\t- {kvp.Value.NonUS,10:N0} Non US reservations.\r\n" +
-           $"\t- {cancelledDeliveries,10:N0} Estimated 5% cancelled orders. ={deliveries:N0} * .05\r\n" +
-           $"\t= {qtrTotal,10:N0} Cyber truck orders for quarter.\r\n";
+        message +=
+        //$"{prevQtrDeliveries,10:N0} Total previous deliveries.\r\n" +
+        $"\r\n\tTracker reservation numbers: ~{kvp.Value.MinResNbr:d6} thru ~{kvp.Value.MaxResNbr} = \r\n" +
+        $"\t~ {kvp.Value.TotalReservations,10:N0} Possible reservations.\r\n" +
+        $"\t  {totalsForTx,10:N0} Texas reservations. (info only - running total)\r\n";
+           //$"\t- {kvp.Value.NonUS,10:N0} Non US reservations.\r\n" +
+           //$"\t- {cancelledDeliveries,10:N0} Estimated 5% cancelled orders. ={deliveries:N0} * .05\r\n" +
+           //$"\t= {qtrTotal,10:N0} Cyber truck orders for quarter.\r\n";
 
         var placeInLine = 0;
         if (kvp.Key != "2019 Q4")
@@ -544,7 +544,7 @@ void ShowQtrResults()
             //message += $"\r\n\t+ {previousCTOrders,10:N0} Previous CT orders.\r\n" +
             //           $"\t- {prevQtrDeliveries,10:N0} Previous Qtr deliveries.\r\n" + 
             //           $"\t= {placeInLine,10:N0} Estimated place in line from start of Quarter.\r\n";
-            message += $"\r\n\t+ {kvp.Value.MinResNbr - TrackerInfo.FirstRN,10:N0} Place in line. RN:{kvp.Value.MinResNbr} - {TrackerInfo.FirstRN}\r\n" +
+            message += $"\r\n\t  {kvp.Value.MinResNbr - TrackerInfo.FirstRN,10:N0} Place in line. RN:{kvp.Value.MinResNbr} - {TrackerInfo.FirstRN}\r\n" +
                        $"\t- {prevQtrDeliveries,10:N0} Previous Qtr deliveries.\r\n" +
                        $"\t= {placeInLine,10:N0} Estimated place in line from start of Quarter.\r\n";
         }
@@ -582,8 +582,9 @@ void ShowAssumptions()
     Console.WriteLine("\r\nCalculations for 2019.Q4 and 2020.Q1 are not very accurate. Post 2020.Q1 the calculations are better, but are still rough.");
     //Console.WriteLine("From the tracker data, the first RN for 2020.01.01 is " + first2020Q1RNumber);
     Console.WriteLine("From that point we use Tesla's quarterly delivery numbers to better adjust the starting position for each quarter.");
-    Console.WriteLine("Assumption that some orders are cancelled, adding a 5% estimate on the number of deliveries cancelled per quarter.");
-    Console.WriteLine("\r\nIncluding a break out of the Non Us and Tx totals. These values may adjust position in line. ");
+    //Console.WriteLine("Assumption that some orders are cancelled, adding a 5% estimate on the number of deliveries cancelled per quarter.");
+    //Console.WriteLine("\r\nIncluding a break out of the Non Us and Tx totals. These values may adjust position in line. ");
+    Console.WriteLine("\r\nIncluding a break out of Tx totals.");
     //Console.WriteLine("Most likely we could use the NonUs totals to adjust your place in line.");
     Console.WriteLine("The Tx based reservations number have a higher chance of being moved up in the line, due to Tesla's standard practices of delivering first to local locations first.");
     Console.WriteLine("However, the adjustments should not be significant.");
